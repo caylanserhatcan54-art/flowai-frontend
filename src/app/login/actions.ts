@@ -2,34 +2,43 @@
 
 import { cookies } from "next/headers";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-
 export async function loginAction(formData: FormData) {
   const email = formData.get("email");
   const password = formData.get("password");
 
+  if (!email || !password) {
+    return { ok: false, error: "missing_fields" };
+  }
+
   try {
-    const res = await fetch(`${API_URL}/auth/login`, {
+    // Backend login
+    const resp = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await res.json();
+    const data = await resp.json();
 
-    if (!res.ok) {
-      return { error: data.error || "Giriş başarısız" };
+    if (!data.ok) {
+      return { ok: false, error: data.error || "login_failed" };
     }
 
-    // Token cookie'ye kaydedilir
-    cookies().set("token", data.token, {
+    // ---------------------------------------------------
+    // NEXT.JS 16 COOKIE YAZMA DOĞRU YÖNTEM
+    // ---------------------------------------------------
+    const cookieStore = await cookies(); // async oldu
+    cookieStore.set("token", data.token, {
       httpOnly: true,
       path: "/",
+      secure: true,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 gün
     });
 
-    return { success: true };
+    return { ok: true };
   } catch (err) {
-    console.error("Login error:", err);
-    return { error: "Sunucu hatası" };
+    console.error("LOGIN ERROR:", err);
+    return { ok: false, error: "server_error" };
   }
 }
