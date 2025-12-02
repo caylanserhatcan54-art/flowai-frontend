@@ -1,27 +1,27 @@
-// src/app/api/shop/public/[shopId]/route.ts
-import { NextRequest } from "next/server";
-
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { shopId: string } }
+  context: { params: { shopId: string } }
 ) {
-  const { shopId } = params;
-
   try {
-    const res = await fetch(`${BACKEND_URL}/api/shops/public/${shopId}`, {
-      method: "GET",
+    const shopId = context.params.shopId;
+
+    if (!shopId) {
+      return NextResponse.json({ ok: false, error: "missing_shopId" });
+    }
+
+    // Burada sen Firestore’dan mağaza bilgisi çekiyorsun
+    // Backend API’n varsa ona istekte bulunabilirsin.
+
+    return NextResponse.json({
+      ok: true,
+      shopId,
+      message: "public shop info OK",
     });
 
-      const data = await res.json();
-      return Response.json(data, { status: res.status });
   } catch (err) {
-    console.error("FRONT_PUBLIC_SHOP_ERROR", err);
-    return Response.json(
-      { ok: false, error: "frontend_public_shop_failed" },
-      { status: 500 }
-    );
+    console.error("SHOP PUBLIC API ERROR:", err);
+    return NextResponse.json({ ok: false, error: "public_api_failed" });
   }
 }
