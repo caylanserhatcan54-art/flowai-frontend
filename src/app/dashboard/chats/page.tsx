@@ -12,7 +12,7 @@ export default function ChatsPage() {
 
   const API_URL =
     process.env.NEXT_PUBLIC_API_URL ||
-    "https://ai-shop-backend-1-um67.onrender.com/api";
+    "https://ai-shop-backend-2.onrender.com";
 
   useEffect(() => {
     async function loadChats() {

@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://ai-shop-backend-1-um67.onrender.com/api";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://ai-shop-backend-2.onrender.com/api";
 
   const { searchParams } = new URL(request.url);
   const shopId = searchParams.get("shopId");

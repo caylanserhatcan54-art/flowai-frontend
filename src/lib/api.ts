@@ -1,6 +1,6 @@
 export const API_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL ||
-  "https://ai-shop-backend-1-um67.onrender.com";
+  "https://ai-shop-backend-2.onrender.com";
 
 export async function apiFetch(path: string, options: any = {}) {
   try {

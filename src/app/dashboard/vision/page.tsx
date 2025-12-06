@@ -10,7 +10,7 @@ export default function VisionUploadPage() {
 
   const API =
     process.env.NEXT_PUBLIC_API_URL ||
-    "https://ai-shop-backend-1-um67.onrender.com/api";
+    "https://ai-shop-backend-2.onrender.com";
 
   async function handleFileSelect(e: any) {
     const file = e.target.files?.[0];

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 export default function AISettingsPage() {
   const API =
     process.env.NEXT_PUBLIC_API_URL ||
-    "https://ai-shop-backend-1-um67.onrender.com/api";
+    "https://ai-shop-backend-2.onrender.com";
 
   const [shopId, setShopId] = useState<string | null>(null);
   const [logo, setLogo] = useState("");

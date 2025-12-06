@@ -17,7 +17,7 @@ export default function ChatUI() {
     setMessages((m) => [...m, userMsg]);
 
     const resp = await fetch(
-      "https://ai-shop-backend-1-um67.onrender.com/ai/chat",
+      "https://ai-shop-backend-2.onrender.com",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
