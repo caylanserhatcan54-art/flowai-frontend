@@ -1,127 +1,85 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const BACKEND = "https://ai-shop-backend-2.onrender.com";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
-  const [loading, setLoading] = useState(true);
-  const [shop, setShop] = useState<any>(null);
-  const [qrImage, setQrImage] = useState("");
-  const [publicLink, setPublicLink] = useState("");
+  const router = useRouter();
+  const [shopName, setShopName] = useState<string>("");
 
   useEffect(() => {
-  const token = localStorage.getItem("shopToken");
-  if (!token) {
-    router.push("/login");
-  }
-}, []);
+    const token = localStorage.getItem("shopToken");
 
-  async function loadShop(email: string) {
-    try {
-      const res = await fetch(`${BACKEND}/auth/get_shop?email=${email}`);
-      const data = await res.json();
-
-      if (!data.ok) {
-        window.location.href = "/login";
-        return;
-      }
-
-      setShop(data.shop);
-
-      // QR + Link oluştur
-      setQrImage(`${BACKEND}/api/qr-image/${data.shop.shopId}`);
-      setPublicLink(`https://flowai.app/${data.shop.shopId}`);
-
-    } catch (err) {
-      console.log(err);
+    if (!token) {
+      router.push("/login");
+      return;
     }
 
-    setLoading(false);
-  }
+    try {
+      const decoded: any = JSON.parse(atob(token.split(".")[1]));
+      setShopName(decoded.shopName || "");
+    } catch {
+      router.push("/login");
+    }
+  }, []);
 
   function logout() {
-    localStorage.clear();
-    window.location.href = "/login";
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white text-xl">
-        Yükleniyor...
-      </div>
-    );
+    localStorage.removeItem("shopToken");
+    router.push("/login");
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-10 font-sans">
-      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-md p-10 border border-gray-200">
-
-        <h1 className="text-3xl font-bold text-blue-700 mb-6">
-          Hoş Geldin, {shop.shopName}
+    <div className="min-h-screen bg-gray-50 px-6 py-12">
+      <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-10">
+        
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Merhaba {shopName} 🎉
         </h1>
 
-        <p className="text-gray-600 text-lg mb-3">
-          Mağazan hazır! Müşteriler QR kodu tarayıp
-          ürünler hakkında yapay zeka ile konuşabilir.
+        <p className="text-gray-600 mb-8">
+          FlowAI mağaza yönetim paneline hoş geldin.  
+          AI asistanını aktif etmek için gerekli alanları tamamla.
         </p>
 
-        <hr className="my-6" />
-
-        {/* PUBLIC LINK */}
-        <div className="mb-6">
-          <p className="text-gray-700 text-lg font-semibold mb-2">
-            Müşteri Linkin
-          </p>
-
-          <input
-            value={publicLink}
-            readOnly
-            className="w-full border p-3 rounded bg-gray-50 text-black"
-          />
-        </div>
-
-        {/* QR CODE */}
-        <div className="mb-8">
-          <p className="text-gray-700 text-lg font-semibold mb-2">
-            Mağazanın QR Kodu
-          </p>
-
-          <div className="flex justify-center">
-            <img
-              src={qrImage}
-              alt="QR Code"
-              className="border shadow-md rounded-lg p-3 bg-white max-w-xs"
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-4 mt-10">
-
-          <button
-            className="w-full bg-blue-600 text-white py-3 text-lg font-semibold rounded hover:bg-blue-700"
+        <div className="space-y-4">
+          <a
+            href="/settings"
+            className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg font-semibold shadow-md"
           >
-            Chrome Uzantısını Aktifleştir
-          </button>
+            🛠️ Mağaza Ayarları
+          </a>
 
-          <button
-            className="w-full bg-orange-500 text-white py-3 text-lg font-semibold rounded hover:bg-orange-600"
+          <a
+            href="/chrome-extension"
+            className="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-lg font-semibold shadow-md"
           >
-            Mağaza Ürünlerini Senkronize Et
-          </button>
+            ➕ Chrome Eklentisini Kur
+          </a>
 
-          <button
-            className="w-full bg-green-600 text-white py-3 text-lg font-semibold rounded hover:bg-green-700"
+          <a
+            href="/qr"
+            className="block w-full text-center bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg font-semibold shadow-md"
           >
-            Ödeme ve Abonelik Planları
-          </button>
+            🔗 QR Kod & Akıllı Linkim
+          </a>
+
+          <a
+            href="/pricing"
+            className="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-lg font-semibold shadow-md"
+          >
+            💳 Abonelik & Ödeme Planı
+          </a>
 
           <button
             onClick={logout}
-            className="w-full bg-red-600 text-white py-3 text-lg font-semibold rounded hover:bg-red-700"
+            className="block w-full text-center bg-red-500 hover:bg-red-600 text-white p-4 rounded-lg font-semibold shadow-md"
           >
-            Çıkış Yap
+            🚪 Çıkış Yap
           </button>
+        </div>
+
+        <div className="mt-10 text-sm text-gray-500 text-center">
+          FlowAI © {new Date().getFullYear()}
         </div>
       </div>
     </div>
