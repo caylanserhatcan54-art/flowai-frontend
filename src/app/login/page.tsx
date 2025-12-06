@@ -1,91 +1,106 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const BACKEND = "https://ai-shop-backend-2.onrender.com";
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  async function handleLogin(e: any) {
-    e.preventDefault();
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  async function handleLogin() {
     setLoading(true);
-    setError("");
+    setErrorMsg("");
 
     try {
       const res = await fetch(`${BACKEND}/auth/login_shop`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
 
       const data = await res.json();
 
       if (!data.ok) {
-        setError("Email veya şifre hatalı.");
+        setErrorMsg("E-mail veya şifre yanlış!");
         setLoading(false);
         return;
       }
 
-      // TOKEN'A YAZILDI
-      localStorage.setItem("shopToken", data.token);
-      localStorage.setItem("shopEmail", email);
+      localStorage.setItem("flowai_token", data.token);
 
-      // DASHBOARD’A GİRİŞ
-      window.location.href = "/dashboard";
+      router.push("/dashboard");
     } catch (err) {
-      setError("Sunucu hatası oluştu!");
+      setErrorMsg("Sunucu bağlantı hatası!");
     }
 
     setLoading(false);
   }
 
   return (
-    <div className="min-h-screen bg-blue-950 flex items-center justify-center">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white p-8 rounded-xl w-full max-w-md shadow-xl"
-      >
-        <h2 className="text-3xl font-bold text-center mb-6 text-blue-700">
-          Giriş Yap
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-[#040269] to-purple-700 text-white px-6">
+
+      <div className="bg-white/10 backdrop-blur-lg p-10 rounded-2xl shadow-xl w-full max-w-md border border-white/30">
+        
+        <h2 className="text-3xl font-bold text-center mb-7">
+          FlowAI Giriş Yap
         </h2>
 
+        {errorMsg !== "" && (
+          <div className="bg-red-500/70 text-white py-2 px-4 rounded-md mb-4 text-center">
+            {errorMsg}
+          </div>
+        )}
+
+        <label className="block text-sm mb-2">E-mail</label>
         <input
           type="email"
-          placeholder="E-posta"
-          className="w-full p-3 border rounded mb-4 text-black placeholder-gray-400"
+          placeholder="E-mail adresiniz"
+          className="w-full p-3 rounded-md text-black outline-none mb-5"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
+        <label className="block text-sm mb-2">Şifre</label>
         <input
           type="password"
-          placeholder="Şifre"
-          className="w-full p-3 border rounded mb-4 text-black placeholder-gray-400"
+          placeholder="Şifreniz"
+          className="w-full p-3 rounded-md text-black outline-none mb-5"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
-
         <button
-          type="submit"
+          onClick={handleLogin}
           disabled={loading}
-          className="w-full p-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded"
+          className="w-full bg-white text-blue-900 font-semibold py-3 rounded-md mt-2 hover:bg-gray-200 transition"
         >
           {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
         </button>
 
-        <p className="text-center mt-4">
+        <button
+          onClick={() => alert("Şifre sıfırlama yakında eklenecek.")}
+          className="block text-center w-full text-white mt-4 underline text-sm"
+        >
+          Şifremi unuttum
+        </button>
+
+        <div className="mt-6 text-center text-sm">
           Hesabın yok mu?
-          <a href="/register" className="text-blue-700 font-semibold ml-2">
+          <a href="/register" className="underline font-semibold ml-1">
             Kayıt Ol
           </a>
-        </p>
-      </form>
+        </div>
+      </div>
     </div>
   );
 }
