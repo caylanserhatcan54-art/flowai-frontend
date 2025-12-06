@@ -1,104 +1,124 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const BACKEND = "https://ai-shop-backend-2.onrender.com";
 
 export default function SettingsPage() {
-  const [plan, setPlan] = useState<string>("standart");
-  const [shopId, setShopId] = useState<string>("");
-  const [statusMsg, setStatusMsg] = useState<string>("");
+  const router = useRouter();
+
+  const [token, setToken] = useState("");
+  const [activePlan, setActivePlan] = useState("none");
+  const [expiresAt, setExpiresAt] = useState<number | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("shopToken");
-    if (!token) return;
+    const t = localStorage.getItem("shopToken");
+    if (!t) return router.push("/login");
+    setToken(t);
 
-    try {
-      const decoded: any = JSON.parse(atob(token.split(".")[1]));
-      setShopId(decoded.shopId || "");
-    } catch {}
+    fetch(`${BACKEND}/auth/me?token=${t}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) {
+          setActivePlan(data.activePlan);
+          setExpiresAt(data.planExpiresAt || null);
+        }
+      });
   }, []);
 
-  async function startPayment() {
-    if (!shopId) {
-      alert("Shop ID bulunamadı");
-      return;
-    }
+  async function startPayment(plan: "standard" | "premium") {
+    alert(plan + " ödemesi başlatılıyor…");
 
-    setStatusMsg("Ödeme başlatılıyor...");
+    // Normalde iyzico link açılacak
+    // test linkini açıyoruz
+    window.open("https://checkout.iyzico.com/mock-payment-test", "_blank");
+  }
 
-    const res = await fetch(`${BACKEND}/payment/create-payment`, {
+  async function activatePlan(planType: "standard" | "premium") {
+    const res = await fetch(`${BACKEND}/auth/activate_plan`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        shopId,
-        plan,
-      }),
+        token,
+        planType,
+        paymentReference: "TEST-REF"
+      })
     });
 
     const data = await res.json();
-    console.log("Payment start response:", data);
-
     if (data.ok) {
-      window.location.href = data.checkoutUrl;
-    } else {
-      alert("Ödeme başlatılamadı.");
+      alert("Plan aktif edildi 🚀");
+      window.location.reload();
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A0E27] to-[#1C034C] text-white p-16">
-      <h1 className="text-4xl font-bold mb-2">🏪 Mağaza Yönetimi</h1>
+    <div className="min-h-screen bg-gradient-to-br from-[#080A22] to-[#190542] text-white p-14">
 
-      <p className="text-lg opacity-80 mb-10">
-        Mağaza bilgilerini düzenle, plan seç ve ödeme yaparak sistemi aktif et.
-      </p>
+      <h1 className="text-4xl font-bold mb-4">🏪 Mağaza Yönetim Paneli</h1>
 
-      <div className="bg-white/10 border border-white/10 backdrop-blur-md p-10 rounded-2xl max-w-3xl">
+      {activePlan === "none" && (
+        <>
+          <h2 className="text-2xl font-semibold mb-4">📌 Henüz bir plana sahip değilsin.</h2>
 
-        <h2 className="text-2xl font-semibold mb-6">📌 Plan Seçimi</h2>
+          <div className="grid grid-cols-2 gap-8">
 
-        {/* PLAN SEÇİMİ */}
-        <div className="space-y-3">
-          <label>
-            <input
-              type="radio"
-              name="plan"
-              value="standart"
-              checked={plan === "standart"}
-              onChange={() => setPlan("standart")}
-            />
-            <span className="ml-3 text-lg">Standart Paket — 499₺ / ay</span>
-          </label>
+            {/* STANDARD PLAN */}
+            <div className="bg-white/10 p-8 rounded-xl border border-white/20">
+              <h3 className="text-3xl font-bold mb-2">Standard Plan</h3>
+              <p className="opacity-90 mb-4">Tek platformda kullan</p>
+              <div className="text-4xl font-bold mb-6">499₺</div>
 
-          <label>
-            <input
-              type="radio"
-              name="plan"
-              value="premium"
-              checked={plan === "premium"}
-              onChange={() => setPlan("premium")}
-            />
-            <span className="ml-3 text-lg">Premium Paket — 899₺ / ay</span>
-          </label>
+              <button
+                className="bg-yellow-300 text-black w-full py-3 rounded-lg"
+                onClick={() => startPayment("standard")}
+              >
+                💳 Satın Al
+              </button>
+
+              <button
+                className="mt-2 bg-blue-600 hover:bg-blue-700 w-full py-2 rounded-lg"
+                onClick={() => activatePlan("standard")}
+              >
+                Test Aktifleştir
+              </button>
+            </div>
+
+            {/* PREMIUM PLAN */}
+            <div className="bg-white/10 p-8 rounded-xl border border-white/20">
+              <h3 className="text-3xl font-bold mb-2">Premium Plan</h3>
+              <p className="opacity-90 mb-4">5 platform destekli</p>
+              <div className="text-4xl font-bold mb-6">899₺</div>
+
+              <button
+                className="bg-yellow-300 text-black w-full py-3 rounded-lg"
+                onClick={() => startPayment("premium")}
+              >
+                💳 Satın Al
+              </button>
+
+              <button
+                className="mt-2 bg-blue-600 hover:bg-blue-700 w-full py-2 rounded-lg"
+                onClick={() => activatePlan("premium")}
+              >
+                Test Aktifleştir
+              </button>
+            </div>
+
+          </div>
+
+        </>
+      )}
+
+      {activePlan !== "none" && (
+        <div className="mt-10 bg-green-600/20 border border-green-400 p-8 rounded-xl">
+          <h2 className="text-3xl font-bold mb-4">🎉 Aktif Plan: {activePlan.toUpperCase()}</h2>
+          <p className="text-lg opacity-90">
+            Yenileme tarihi: {expiresAt ? new Date(expiresAt).toLocaleDateString() : ""}
+          </p>
         </div>
-
-        {/* SATIN AL BUTONU */}
-        <button
-          onClick={startPayment}
-          className="w-full mt-8 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-4 rounded-xl shadow-md text-lg"
-        >
-          💳 Ödemeyi Başlat
-        </button>
-
-        {statusMsg && (
-          <p className="text-sm mt-4 opacity-80">{statusMsg}</p>
-        )}
-      </div>
-
-      <p className="text-center text-sm opacity-60 mt-10">
-        Ödeme sonucunda plan otomatik aktif edilecektir.
-      </p>
+      )}
     </div>
   );
 }
