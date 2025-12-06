@@ -16,84 +16,95 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const requestBody = JSON.stringify({
-        email,
-        password
-      });
-
-      console.log("Sending:", requestBody);
+      console.log("Sending:", { email, password });
 
       const res = await fetch(`${BACKEND}/auth/login_shop`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: requestBody,
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
-
       console.log("Response:", data);
 
-      if (!data.ok) {
-        setError("E-posta veya şifre hatalı");
-        return;
+      if (data.ok) {
+        localStorage.setItem("shopToken", data.token);
+        router.push("/dashboard");
+      } else {
+        setError(data.error || "Giriş hatası");
       }
-
-      // ⭐ TOKEN’I LOCALSTORAGE’A KAYDEDİYORUZ
-      localStorage.setItem("shopToken", data.token);
-
-      // ⭐ BAŞARILI GİRİŞ → YÖNLENDİR
-      router.push("/dashboard");
-
     } catch (err) {
-      console.log(err);
-      setError("Sunucuya bağlanılamadı");
+      setError("Sunucuya ulaşılamıyor!");
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex justify-center items-center px-4">
+    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-700 p-6">
+      <div className="bg-white shadow-2xl rounded-2xl p-10 w-full max-w-md">
+        <h1 className="text-3xl font-extrabold text-gray-900 text-center">
+          FlowAI Giriş Yap
+        </h1>
 
-      <form onSubmit={handleLogin} className="bg-white shadow-lg rounded-xl p-10 w-full max-w-md border">
-        
-        <h2 className="text-2xl font-bold text-center mb-6">
-          Mağaza Girişi
-        </h2>
-
-        {error && (
-          <div className="bg-red-200 text-red-800 p-2 rounded-md text-center mb-4">
-            {error}
-          </div>
-        )}
-
-        <label className="text-gray-700 font-semibold">E-posta Adresi</label>
-        <input
-          className="w-full mt-2 mb-4 p-3 border rounded-lg focus:ring focus:ring-blue-300 outline-none"
-          type="email"
-          placeholder="mail@example.com"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <label className="text-gray-700 font-semibold">Şifre</label>
-        <input
-          className="w-full mt-2 mb-6 p-3 border rounded-lg focus:ring focus:ring-blue-300 outline-none"
-          type="password"
-          placeholder="••••••"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg font-semibold"
-        >
-          Giriş Yap
-        </button>
-
-        <p className="text-center mt-4 text-sm">
-          Şifremi unuttum
+        <p className="text-center text-gray-600 mt-2 font-medium">
+          Mağaza yönetim paneline erişin
         </p>
-      </form>
+
+        <form onSubmit={handleLogin} className="mt-10 space-y-6">
+          <div>
+            <label className="font-semibold text-gray-800 block mb-2">
+              Email
+            </label>
+            <input
+              type="email"
+              className="w-full border border-gray-300 p-3 rounded-lg focus:ring-4 focus:ring-purple-300 text-gray-900"
+              placeholder="mail@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold text-gray-800 block mb-2">
+              Şifre
+            </label>
+            <input
+              type="password"
+              className="w-full border border-gray-300 p-3 rounded-lg focus:ring-4 focus:ring-purple-300 text-gray-900"
+              placeholder="Şifreniz"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          {error && (
+            <p className="text-center text-red-600 font-semibold text-sm">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white rounded-xl text-lg font-bold shadow-lg"
+          >
+            🚀 Giriş Yap
+          </button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Hesabın yok mu?
+          <a href="/register" className="text-purple-700 font-bold ml-2">
+            Kayıt ol
+          </a>
+        </p>
+
+        <p className="mt-4 text-center text-xs text-gray-400">
+          © {new Date().getFullYear()} FlowAI – Tüm Hakları Saklıdır
+        </p>
+      </div>
     </div>
   );
 }
