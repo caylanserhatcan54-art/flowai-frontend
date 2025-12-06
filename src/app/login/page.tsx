@@ -2,96 +2,90 @@
 
 import { useState } from "react";
 
-export default function LoginPage() {
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
+const BACKEND = "https://ai-shop-backend-2.onrender.com";
 
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function loginShop(e: any) {
+  async function handleLogin(e: any) {
     e.preventDefault();
-    setError("");
     setLoading(true);
+    setError("");
 
-    const res = await fetch(
-      "https://ai-shop-backend-2.onrender.com/auth/login_shop",
-      {
+    try {
+      const res = await fetch(`${BACKEND}/auth/login_shop`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!data.ok) {
+        setError("Email veya şifre hatalı.");
+        setLoading(false);
+        return;
       }
-    );
 
-    const data = await res.json();
-    setLoading(false);
+      // TOKEN'A YAZILDI
+      localStorage.setItem("shopToken", data.token);
+      localStorage.setItem("shopEmail", email);
 
-    if (data.ok) {
-      localStorage.setItem("token", data.token);
+      // DASHBOARD’A GİRİŞ
       window.location.href = "/dashboard";
-    } else {
-      setError(data.message || "Giriş başarısız");
+    } catch (err) {
+      setError("Sunucu hatası oluştu!");
     }
+
+    setLoading(false);
   }
 
   return (
-    <div className="min-h-screen bg-[#0E1420] flex items-center justify-center p-6 text-white">
-      <div className="w-full max-w-md bg-[#151C29] border border-[#263243] p-10 rounded-2xl shadow-xl">
-        {/* Logo */}
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-blue-400">FlowAI</h1>
-          <p className="text-gray-400 text-sm mt-1">
-            Mağaza Yönetimi Giriş
-          </p>
-        </div>
+    <div className="min-h-screen bg-blue-950 flex items-center justify-center">
+      <form
+        onSubmit={handleLogin}
+        className="bg-white p-8 rounded-xl w-full max-w-md shadow-xl"
+      >
+        <h2 className="text-3xl font-bold text-center mb-6 text-blue-700">
+          Giriş Yap
+        </h2>
 
-        <form onSubmit={loginShop} className="space-y-4">
-          <div>
-            <label className="text-gray-300 text-sm">E-posta</label>
-            <input
-              type="email"
-              placeholder="example@test.com"
-              className="w-full mt-1 p-3 rounded-lg bg-[#0E1420] border border-gray-700 text-white focus:border-blue-500 outline-none"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-          </div>
+        <input
+          type="email"
+          placeholder="E-posta"
+          className="w-full p-3 border rounded mb-4 text-black placeholder-gray-400"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-          <div>
-            <label className="text-gray-300 text-sm">Şifre</label>
-            <input
-              type="password"
-              placeholder="******"
-              className="w-full mt-1 p-3 rounded-lg bg-[#0E1420] border border-gray-700 text-white focus:border-blue-500 outline-none"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-            />
-          </div>
+        <input
+          type="password"
+          placeholder="Şifre"
+          className="w-full p-3 border rounded mb-4 text-black placeholder-gray-400"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-          {error && (
-            <p className="text-red-500 text-sm text-center font-medium">
-              ❗ {error}
-            </p>
-          )}
+        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 transition rounded-lg py-3 font-semibold shadow-md"
-          >
-            {loading ? "Giriş Yapılıyor..." : "Giriş Yap"}
-          </button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full p-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded"
+        >
+          {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
+        </button>
 
-          <p className="mt-4 text-center text-gray-400 text-sm">
-            Hesabın yok mu?{" "}
-            <a href="/register" className="text-blue-400 hover:underline font-semibold">
-              Kayıt Ol
-            </a>
-          </p>
-        </form>
-      </div>
+        <p className="text-center mt-4">
+          Hesabın yok mu?
+          <a href="/register" className="text-blue-700 font-semibold ml-2">
+            Kayıt Ol
+          </a>
+        </p>
+      </form>
     </div>
   );
 }

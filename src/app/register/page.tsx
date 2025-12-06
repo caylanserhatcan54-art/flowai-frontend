@@ -1,107 +1,98 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
+
+const BACKEND = "https://ai-shop-backend-2.onrender.com";
 
 export default function RegisterPage() {
-  const API_URL = "https://ai-shop-backend-2.onrender.com";
-
   const [shopName, setShopName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccess] = useState("");
+  const [errorMsg, setError] = useState("");
 
-  const handleRegister = async () => {
+  async function handleRegister(e: any) {
+    e.preventDefault();
     setLoading(true);
-    setErrorMsg("");
+    setError("");
+    setSuccess("");
 
     try {
-      const res = await fetch(`${API_URL}/auth/register_shop`, {
+      const res = await fetch(`${BACKEND}/auth/register_shop`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shopName, email, password }),
       });
 
       const data = await res.json();
 
       if (!data.ok) {
-        setErrorMsg(data.message || "Kayıt başarısız");
+        setError("Kayıt yapılamadı!");
         setLoading(false);
         return;
       }
 
-      setSuccessMsg("Hesap başarıyla oluşturuldu! Yönlendiriliyorsunuz...");
-
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
-
-    } catch (err: any) {
-      setErrorMsg("Sunucu hatası!");
+      setSuccess("Hesap başarıyla oluşturuldu! Şimdi giriş yapabilirsiniz.");
+    } catch (err) {
+      setError("Sunucu hatası oluştu!");
     }
 
     setLoading(false);
-  };
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
-      <div className="w-full max-w-md bg-white border rounded-lg shadow p-8">
-
-        <h2 className="text-3xl font-bold text-center mb-6">
-          Hemen Kaydol
+    <div className="min-h-screen bg-blue-900 flex items-center justify-center">
+      <form
+        className="bg-white p-8 rounded-xl w-full max-w-md shadow-xl"
+        onSubmit={handleRegister}
+      >
+        <h2 className="text-3xl font-bold text-center text-blue-800 mb-6">
+          Hesap Oluştur
         </h2>
 
         <input
-          className="w-full p-3 border rounded mb-4"
           type="text"
           placeholder="Mağaza Adı"
+          className="w-full p-3 border rounded text-black mb-3"
           value={shopName}
           onChange={(e) => setShopName(e.target.value)}
         />
 
         <input
-          className="w-full p-3 border rounded mb-4"
           type="email"
-          placeholder="E-posta adresi"
+          placeholder="E-posta"
+          className="w-full p-3 border rounded text-black mb-3"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
-          className="w-full p-3 border rounded mb-4"
           type="password"
           placeholder="Şifre"
+          className="w-full p-3 border rounded text-black mb-3"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {errorMsg && (
-          <p className="text-red-600 text-sm mb-4">{errorMsg}</p>
-        )}
-
-        {successMsg && (
-          <p className="text-green-600 text-sm mb-4">{successMsg}</p>
-        )}
+        {successMsg && <p className="text-green-600 text-center mb-4">{successMsg}</p>}
+        {errorMsg && <p className="text-red-600 text-center mb-4">{errorMsg}</p>}
 
         <button
+          type="submit"
           disabled={loading}
-          onClick={handleRegister}
-          className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-semibold"
+          className="w-full p-3 rounded-lg bg-blue-700 hover:bg-blue-800 font-semibold text-white"
         >
-          {loading ? "Kaydediliyor..." : "Hesap Oluştur"}
+          {loading ? "Oluşturuluyor..." : "Kaydet ve Devam Et"}
         </button>
 
-        <p className="text-center mt-4 text-sm">
-          Zaten hesabın var mı?{" "}
-          <a href="/login" className="text-blue-600 font-semibold">
+        <p className="text-center mt-4 text-gray-700">
+          Zaten hesabın var?
+          <a href="/login" className="text-blue-700 font-semibold ml-2">
             Giriş yap
           </a>
         </p>
-      </div>
+      </form>
     </div>
   );
 }
