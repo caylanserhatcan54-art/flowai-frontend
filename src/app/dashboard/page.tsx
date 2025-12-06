@@ -11,16 +11,11 @@ export default function DashboardPage() {
   const [publicLink, setPublicLink] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("shopToken");
-    const email = localStorage.getItem("shopEmail");
-
-    if (!token || !email) {
-      window.location.href = "/login";
-      return;
-    }
-
-    loadShop(email);
-  }, []);
+  const token = localStorage.getItem("shopToken");
+  if (!token) {
+    router.push("/login");
+  }
+}, []);
 
   async function loadShop(email: string) {
     try {

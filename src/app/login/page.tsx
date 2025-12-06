@@ -7,100 +7,93 @@ const BACKEND = "https://ai-shop-backend-2.onrender.com";
 
 export default function LoginPage() {
   const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-
-  async function handleLogin() {
-    setLoading(true);
-    setErrorMsg("");
+  async function handleLogin(e: any) {
+    e.preventDefault();
+    setError("");
 
     try {
+      const requestBody = JSON.stringify({
+        email,
+        password
+      });
+
+      console.log("Sending:", requestBody);
+
       const res = await fetch(`${BACKEND}/auth/login_shop`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: requestBody,
       });
 
       const data = await res.json();
 
+      console.log("Response:", data);
+
       if (!data.ok) {
-        setErrorMsg("E-mail veya şifre yanlış!");
-        setLoading(false);
+        setError("E-posta veya şifre hatalı");
         return;
       }
 
-      localStorage.setItem("flowai_token", data.token);
+      // ⭐ TOKEN’I LOCALSTORAGE’A KAYDEDİYORUZ
+      localStorage.setItem("shopToken", data.token);
 
+      // ⭐ BAŞARILI GİRİŞ → YÖNLENDİR
       router.push("/dashboard");
-    } catch (err) {
-      setErrorMsg("Sunucu bağlantı hatası!");
-    }
 
-    setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setError("Sunucuya bağlanılamadı");
+    }
   }
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-[#040269] to-purple-700 text-white px-6">
+    <div className="min-h-screen bg-gray-50 flex justify-center items-center px-4">
 
-      <div className="bg-white/10 backdrop-blur-lg p-10 rounded-2xl shadow-xl w-full max-w-md border border-white/30">
+      <form onSubmit={handleLogin} className="bg-white shadow-lg rounded-xl p-10 w-full max-w-md border">
         
-        <h2 className="text-3xl font-bold text-center mb-7">
-          FlowAI Giriş Yap
+        <h2 className="text-2xl font-bold text-center mb-6">
+          Mağaza Girişi
         </h2>
 
-        {errorMsg !== "" && (
-          <div className="bg-red-500/70 text-white py-2 px-4 rounded-md mb-4 text-center">
-            {errorMsg}
+        {error && (
+          <div className="bg-red-200 text-red-800 p-2 rounded-md text-center mb-4">
+            {error}
           </div>
         )}
 
-        <label className="block text-sm mb-2">E-mail</label>
+        <label className="text-gray-700 font-semibold">E-posta Adresi</label>
         <input
+          className="w-full mt-2 mb-4 p-3 border rounded-lg focus:ring focus:ring-blue-300 outline-none"
           type="email"
-          placeholder="E-mail adresiniz"
-          className="w-full p-3 rounded-md text-black outline-none mb-5"
-          value={email}
+          placeholder="mail@example.com"
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        <label className="block text-sm mb-2">Şifre</label>
+        <label className="text-gray-700 font-semibold">Şifre</label>
         <input
+          className="w-full mt-2 mb-6 p-3 border rounded-lg focus:ring focus:ring-blue-300 outline-none"
           type="password"
-          placeholder="Şifreniz"
-          className="w-full p-3 rounded-md text-black outline-none mb-5"
-          value={password}
+          placeholder="••••••"
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <button
-          onClick={handleLogin}
-          disabled={loading}
-          className="w-full bg-white text-blue-900 font-semibold py-3 rounded-md mt-2 hover:bg-gray-200 transition"
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg font-semibold"
         >
-          {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
+          Giriş Yap
         </button>
 
-        <button
-          onClick={() => alert("Şifre sıfırlama yakında eklenecek.")}
-          className="block text-center w-full text-white mt-4 underline text-sm"
-        >
+        <p className="text-center mt-4 text-sm">
           Şifremi unuttum
-        </button>
-
-        <div className="mt-6 text-center text-sm">
-          Hesabın yok mu?
-          <a href="/register" className="underline font-semibold ml-1">
-            Kayıt Ol
-          </a>
-        </div>
-      </div>
+        </p>
+      </form>
     </div>
   );
 }
