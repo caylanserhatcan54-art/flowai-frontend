@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const API_URL = "https://ai-shop-backend-1-um67.onrender.com";
+const API_URL = "https://ai-shop-backend-2.onrender.com";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("serhat@test.com");
