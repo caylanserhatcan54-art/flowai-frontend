@@ -1,15 +1,20 @@
-// src/app/layout.tsx
 import "./globals.css";
-import ClientWrapper from "@/components/ClientWrapper";
+import type { Metadata } from "next";
 
-export default function RootLayout({ children }: any) {
+export const metadata: Metadata = {
+  title: "FlowAI",
+  description: "AI Shop Assistant Platform",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="tr">
-      <body className="bg-white text-gray-900">
-        {/* 🔥 Dashboard tarafında localStorage erişimi için client wrapper ZORUNLU */}
-        <ClientWrapper>
-          {children}
-        </ClientWrapper>
+      <body className="bg-neutral-950 text-white">
+        {children}
       </body>
     </html>
   );
