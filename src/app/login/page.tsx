@@ -18,7 +18,7 @@ export default function LoginPage() {
     try {
       console.log("Sending:", { email, password });
 
-      const res = await fetch("https://ai-shop-backend-2.onrender.com/api/auth/login_shop", {
+      const res = await fetch("https://ai-shop-backend-2.onrender.com/auth/login_shop", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

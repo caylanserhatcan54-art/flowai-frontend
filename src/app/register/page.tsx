@@ -19,7 +19,7 @@ export default function RegisterPage() {
     setSuccess("");
 
     try {
-      const res = await fetch("https://ai-shop-backend-2.onrender.com/api/auth/register_shop", {
+      const res = await fetch("https://ai-shop-backend-2.onrender.com/auth/register_shop", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shopName, email, password }),
