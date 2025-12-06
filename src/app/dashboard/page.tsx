@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function DashboardPage() {
+export default function DashboardLanding() {
   const router = useRouter();
   const [shopName, setShopName] = useState<string>("");
 
@@ -23,64 +23,96 @@ export default function DashboardPage() {
     }
   }, []);
 
-  function logout() {
-    localStorage.removeItem("shopToken");
-    router.push("/login");
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-12">
-      <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-10">
+    <div className="min-h-screen w-full bg-gradient-to-b from-indigo-950 via-blue-900 to-blue-600 text-white px-6 py-16">
+      <div className="max-w-4xl mx-auto text-center">
         
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Merhaba {shopName} 🎉
+        <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+          Merhaba {shopName}! 🎉
         </h1>
 
-        <p className="text-gray-600 mb-8">
-          FlowAI mağaza yönetim paneline hoş geldin.  
-          AI asistanını aktif etmek için gerekli alanları tamamla.
+        <p className="text-lg opacity-90 max-w-3xl mx-auto">
+          FlowAI mağazan için profesyonel bir yapay zeka satış asistanı oluşturdu.
+          Müşterilerini karşılar, ürünlerini analiz eder, tarz ve ihtiyaçlara göre
+          ürün önerisi sunar ve satışa dönüştürür. Şimdi mağazana özel entegrasyonları
+          tamamlayarak başla! 🚀
         </p>
 
-        <div className="space-y-4">
-          <a
-            href="/settings"
-            className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg font-semibold shadow-md"
-          >
-            🛠️ Mağaza Ayarları
-          </a>
+        {/* ÖZELLİKLER */}
+        <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
+          
+          <div className="bg-white text-gray-900 rounded-xl p-8 shadow-lg">
+            <h3 className="text-2xl font-semibold mb-3">💬 Akıllı Mağaza Asistanı</h3>
+            <p className="text-gray-700 text-sm">
+              Müşteriye hoş geldiniz der, sorularını yanıtlar, kampanya veya ürün bilgilendirmesi yapar.
+              Tüm cevapları senin mağazana göre optimize eder.
+            </p>
+          </div>
 
-          <a
-            href="/chrome-extension"
-            className="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-lg font-semibold shadow-md"
-          >
-            ➕ Chrome Eklentisini Kur
-          </a>
+          <div className="bg-white text-gray-900 rounded-xl p-8 shadow-lg">
+            <h3 className="text-2xl font-semibold mb-3">🛒 Satış Odaklı Öneri Motoru</h3>
+            <p className="text-gray-700 text-sm">
+              Müşteri niyetini analiz eder, sepete uygun ürün çıkarır ve satışa yönlendirir.
+              Daha yüksek dönüşüm sağlanır.
+            </p>
+          </div>
 
-          <a
-            href="/qr"
-            className="block w-full text-center bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg font-semibold shadow-md"
-          >
-            🔗 QR Kod & Akıllı Linkim
-          </a>
+          <div className="bg-white text-gray-900 rounded-xl p-8 shadow-lg">
+            <h3 className="text-2xl font-semibold mb-3">📷 Try-On Görsel Önizleme (Yakında)</h3>
+            <p className="text-gray-700 text-sm">
+              Müşteri fotoğraf yükler, ürün üzerinde nasıl duracağını görür.
+              Kıyafet, takı ve aksesuar için benzersiz deneyim.
+            </p>
+          </div>
 
-          <a
-            href="/pricing"
-            className="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-lg font-semibold shadow-md"
+          <div className="bg-white text-gray-900 rounded-xl p-8 shadow-lg">
+            <h3 className="text-2xl font-semibold mb-3">🤖 Çoklu Platform Desteği</h3>
+            <p className="text-gray-700 text-sm leading-relaxed">
+              Aşağıdaki pazar yerlerine özel yapılandırılmıştır:
+              <br/><br/>
+              ✔ Trendyol<br/>
+              ✔ Hepsiburada<br/>
+              ✔ Amazon TR<br/>
+              ✔ N11<br/>
+              ✔ ÇiçekSepeti<br/><br/>
+              Ürün açıklamalarını analiz ederek akıllı tekst üretir.
+            </p>
+          </div>
+        </div>
+
+        {/* HAREKET BUTONLARI */}
+        <div className="mt-14 flex flex-col gap-4 sm:flex-row justify-center">
+          
+          <button
+            onClick={() => router.push("/settings")}
+            className="bg-white hover:bg-gray-200 text-black font-semibold text-lg px-8 py-4 rounded-lg shadow-md"
           >
-            💳 Abonelik & Ödeme Planı
-          </a>
+            🚀 Kuruluma Başla
+          </button>
 
           <button
-            onClick={logout}
-            className="block w-full text-center bg-red-500 hover:bg-red-600 text-white p-4 rounded-lg font-semibold shadow-md"
+            onClick={() => router.push("/panel")}
+            className="bg-green-500 hover:bg-green-600 text-white font-semibold text-lg px-8 py-4 rounded-lg shadow-md"
           >
-            🚪 Çıkış Yap
+            🏪 Mağaza Yönetim Paneli
           </button>
+
+          <button
+            onClick={() => {
+              localStorage.removeItem("shopToken");
+              router.push("/login");
+            }}
+            className="bg-red-600 hover:bg-red-700 text-white font-semibold text-lg px-8 py-4 rounded-lg shadow-md"
+          >
+            Çıkış Yap
+          </button>
+
         </div>
 
-        <div className="mt-10 text-sm text-gray-500 text-center">
-          FlowAI © {new Date().getFullYear()}
-        </div>
+        <p className="text-center opacity-70 text-sm mt-12">
+          FlowAI © 2025 – Akıllı Ticaretin Yeni Nesli
+        </p>
+
       </div>
     </div>
   );
