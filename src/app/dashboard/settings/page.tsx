@@ -6,12 +6,19 @@ export default function SettingsPage() {
   const [shop, setShop] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  const API =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ai-shop-backend-1-um67.onrender.com/api";
+
   useEffect(() => {
     const shopId = localStorage.getItem("shopId");
 
-    if (!shopId) return;
+    if (!shopId) {
+      setLoading(false);
+      return;
+    }
 
-    fetch(`http://localhost:4000/api/shops/get?shopId=${shopId}`)
+    fetch(`${API}/shops/get?shopId=${shopId}`, { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         if (data.ok) {
@@ -19,8 +26,11 @@ export default function SettingsPage() {
         }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
-  }, []);
+      .catch((err) => {
+        console.error("Settings fetch error:", err);
+        setLoading(false);
+      });
+  }, [API]);
 
   if (loading) {
     return (
@@ -103,7 +113,8 @@ export default function SettingsPage() {
         </div>
 
         <p className="text-sm text-gray-500 mt-3">
-          Bu linki Trendyol / Hepsiburada ürün açıklamasına koyabilir veya QR'ı ürün görsellerine ekleyebilirsiniz.
+          Bu linki Trendyol / Hepsiburada ürün açıklamasına koyabilir veya QR'ı
+          ürün görsellerine ekleyebilirsiniz.
         </p>
       </div>
     </div>

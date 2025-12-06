@@ -1,4 +1,16 @@
+"use client";
+
+import { useEffect } from "react";
+
 export default function HomePage() {
+
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("flowai_token") : null;
+    if (token) {
+      window.location.href = "/dashboard";
+    }
+  }, []);
+
   return (
     <main className="min-h-screen bg-white text-gray-900">
 

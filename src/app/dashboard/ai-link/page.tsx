@@ -8,21 +8,36 @@ export default function AILinkPage() {
   const [shop, setShop] = useState<any>(null);
   const [qr, setQr] = useState<string>("");
 
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ai-shop-backend-1-um67.onrender.com/api";
+
+  // FRONTEND DOMAIN (AI widget açılan URL)
+  const FRONTEND_URL =
+    process.env.NEXT_PUBLIC_FRONTEND_URL ||
+    "https://flowai-frontend-hmz9.vercel.app";
+
   useEffect(() => {
     const shopId = localStorage.getItem("shopId");
     if (!shopId) return;
 
-    fetch(`http://localhost:4000/api/shop/get?shopId=${shopId}`)
+    // ✔ doğru backend endpoint
+    fetch(`${API_URL}/public/shop-info?shopId=${shopId}`)
       .then((res) => res.json())
       .then(async (data) => {
         if (data.ok) {
           setShop(data.shop);
 
-          const url = `https://senin-domain.com/ai/${shopId}`;
+          // ✔ mağaza için doğru AI URL (frontend)
+          const url = `${FRONTEND_URL}/ai?shop=${shopId}`;
 
+          // ✔ QR üret
           const qrData = await QRCode.toDataURL(url);
           setQr(qrData);
         }
+      })
+      .catch((err) => {
+        console.error("Shop info error:", err);
       });
   }, []);
 
@@ -33,7 +48,7 @@ export default function AILinkPage() {
       </div>
     );
 
-  const aiUrl = `https://senin-domain.com/ai/${shop.id}`;
+  const aiUrl = `${FRONTEND_URL}/ai?shop=${shop.id}`;
 
   function downloadQR() {
     const a = document.createElement("a");
@@ -44,13 +59,14 @@ export default function AILinkPage() {
 
   return (
     <div className="p-6">
-
       <h1 className="text-2xl font-bold mb-4">AI Link & QR Kod</h1>
 
       <div className="bg-white shadow p-6 rounded-xl border">
-
         {/* LİNK */}
-        <p className="text-gray-700 font-semibold">Mağazaya Özel AI Bağlantısı:</p>
+        <p className="text-gray-700 font-semibold">
+          Mağazaya Özel AI Bağlantısı:
+        </p>
+
         <div className="bg-gray-100 p-3 rounded-lg mt-2 border text-gray-800 break-all">
           {aiUrl}
         </div>

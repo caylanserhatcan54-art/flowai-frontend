@@ -1,9 +1,10 @@
 "use client";
-
 import { useState, useEffect } from "react";
 
 export default function AISettingsPage() {
-  const API = "http://localhost:4000";
+  const API =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ai-shop-backend-1-um67.onrender.com/api";
 
   const [shopId, setShopId] = useState<string | null>(null);
   const [logo, setLogo] = useState("");
@@ -12,21 +13,20 @@ export default function AISettingsPage() {
   const [status, setStatus] = useState("");
 
   // ------------------------------------------------------
-  // 🔥 Shop ID'yi güvenli şekilde alıyoruz
+  // 🔥 Shop ID'yi güvenli şekilde al
   // ------------------------------------------------------
   useEffect(() => {
     const id = localStorage.getItem("shopId");
-    console.log("Loaded SHOP ID:", id);
     setShopId(id);
   }, []);
 
   // ------------------------------------------------------
-  // 🔥 Mağaza AI ayarlarını Firestore'dan çek
+  // 🔥 Firestore AI ayarlarını yükle
   // ------------------------------------------------------
   useEffect(() => {
     if (!shopId) return;
 
-    fetch(`${API}/api/ai-settings/${shopId}`)
+    fetch(`${API}/ai-settings/${shopId}`)
       .then((r) => r.json())
       .then((data) => {
         if (data.ok && data.settings) {
@@ -34,8 +34,11 @@ export default function AISettingsPage() {
           setStoreName(data.settings.storeName || "");
           setDescription(data.settings.description || "");
         }
+      })
+      .catch((e) => {
+        console.error("Ayar yükleme hatası:", e);
       });
-  }, [shopId]);
+  }, [shopId, API]);
 
   // ------------------------------------------------------
   // 🔥 Ayarları kaydet
@@ -46,7 +49,7 @@ export default function AISettingsPage() {
       return;
     }
 
-    const res = await fetch(`${API}/api/ai-settings/${shopId}`, {
+    const res = await fetch(`${API}/ai-settings/${shopId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -73,7 +76,7 @@ export default function AISettingsPage() {
 
     setStatus("Yükleniyor...");
 
-    const upload = await fetch(`${API}/api/uploads/logo`, {
+    const upload = await fetch(`${API}/uploads/logo`, {
       method: "POST",
       body: formData,
     });
@@ -138,7 +141,7 @@ export default function AISettingsPage() {
 
         {/* DESCRIPTION */}
         <div className="mt-6">
-          <label className="font-semibold text-gray-900 block mb-2">
+          <label className="font-semibold text-gray-900 block ml-1 mb-2">
             Mağaza Açıklaması
           </label>
           <textarea

@@ -3,6 +3,10 @@
 import { useState } from "react";
 
 export default function CreateShopPage() {
+  const API =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ai-shop-backend-1-um67.onrender.com/api";
+
   const [name, setName] = useState("");
   const [storeUrl, setStoreUrl] = useState("");
   const [platform, setPlatform] = useState("custom");
@@ -28,7 +32,7 @@ export default function CreateShopPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:4000/api/shops/register", {
+      const res = await fetch(`${API}/shops/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,6 +60,7 @@ export default function CreateShopPage() {
       window.location.href = "/dashboard";
 
     } catch (err) {
+      console.error(err);
       setError("Sunucuyla bağlantı kurulamadı.");
     }
 

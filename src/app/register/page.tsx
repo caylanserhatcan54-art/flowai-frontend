@@ -1,86 +1,114 @@
-"use client";
-
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
-const API_BASE = "http://localhost:4000";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://ai-shop-backend-1-um67.onrender.com";
 
 export default function RegisterPage() {
-  const router = useRouter();
-
-  const [email, setEmail] = useState("");
-  const [shopName, setShopName] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [shopName, setShopName] = useState("Serhat Store");
+  const [email, setEmail] = useState("serhat@test.com");
+  const [password, setPassword] = useState("123456");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  async function handleRegister() {
-    setError(null);
+  async function handleRegister(e: React.FormEvent) {
+    e.preventDefault();
     setLoading(true);
+    setError(null);
+    setSuccess(null);
 
     try {
-      const res = await fetch(`${API_BASE}/auth/register`, {
+      const res = await fetch(`${API_URL}/auth/register_shop`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, shopName }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ shopName, email, password }),
       });
 
       const data = await res.json();
-      console.log("REGISTER RESPONSE:", data);
 
-      if (!data.success) {
-        setError(data.error || "Kayıt başarısız.");
-        setLoading(false);
-        return;
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || "Kayıt başarısız");
       }
 
-      // kullanıcı oluşturulduktan sonra login yönlendirme
-      router.push("/login");
-    } catch (err) {
-      console.error("REGISTER ERROR:", err);
-      setError("Sunucu hatası");
+      setSuccess("Kayıt başarılı! Şimdi giriş yapabilirsiniz.");
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Bilinmeyen hata");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex justify-center">
-      <div className="w-full max-w-md px-4 py-16">
-        <h1 className="text-3xl font-bold mb-6">Kayıt Ol</h1>
+    <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+        <h1 className="text-2xl font-bold text-center mb-6">
+          FlowAI Mağaza Kaydı
+        </h1>
 
-        <div className="space-y-4 bg-slate-900 border border-slate-800 rounded-xl p-6">
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full bg-slate-950 border border-slate-700 rounded-md px-3 py-2"
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        {error && (
+          <div className="mb-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+            {error}
+          </div>
+        )}
 
-          <input
-            type="text"
-            placeholder="Mağaza Adı"
-            className="w-full bg-slate-950 border border-slate-700 rounded-md px-3 py-2"
-            onChange={(e) => setShopName(e.target.value)}
-          />
+        {success && (
+          <div className="mb-3 text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">
+            {success}
+          </div>
+        )}
 
-          <input
-            type="password"
-            placeholder="Şifre"
-            className="w-full bg-slate-950 border border-slate-700 rounded-md px-3 py-2"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+        <form onSubmit={handleRegister} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Mağaza Adı
+            </label>
+            <input
+              type="text"
+              className="w-full border rounded px-3 py-2 text-sm"
+              value={shopName}
+              onChange={(e) => setShopName(e.target.value)}
+              placeholder="Örn: Serhat Moda"
+              required
+            />
+          </div>
 
-          {error && <div className="text-red-400 text-sm">{error}</div>}
+          <div>
+            <label className="block text-sm font-medium mb-1">E-posta</label>
+            <input
+              type="email"
+              className="w-full border rounded px-3 py-2 text-sm"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="ornek@magaza.com"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Şifre</label>
+            <input
+              type="password"
+              className="w-full border rounded px-3 py-2 text-sm"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="******"
+              required
+            />
+          </div>
 
           <button
-            onClick={handleRegister}
-            className="w-full bg-blue-600 rounded-md py-2"
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded mt-2 disabled:opacity-60"
           >
             {loading ? "Kayıt yapılıyor..." : "Kayıt Ol"}
           </button>
-        </div>
+        </form>
       </div>
-    </div>
+    </main>
   );
 }

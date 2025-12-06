@@ -8,6 +8,10 @@ export default function VisionUploadPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
 
+  const API =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ai-shop-backend-1-um67.onrender.com/api";
+
   async function handleFileSelect(e: any) {
     const file = e.target.files?.[0];
 
@@ -16,10 +20,9 @@ export default function VisionUploadPage() {
       return;
     }
 
-    // ✔ Dosya adı hatası giderildi
     console.log("Yüklenen dosya:", file.name);
 
-    // Normal preview oluştur
+    // Önizleme
     const reader = new FileReader();
     reader.onloadend = () => setImagePreview(reader.result as string);
     reader.readAsDataURL(file);
@@ -52,7 +55,7 @@ export default function VisionUploadPage() {
     try {
       const shopId = localStorage.getItem("shopId");
 
-      const res = await fetch("http://localhost:4000/api/vision/analyze", {
+      const res = await fetch(`${API}/vision/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shopId, imageBase64: base64 }),
@@ -64,6 +67,7 @@ export default function VisionUploadPage() {
       setResult(data);
     } catch (err) {
       console.error("UPLOAD ERROR:", err);
+      setResult({ ok: false, error: "Analiz sırasında hata oluştu." });
     } finally {
       setLoading(false);
     }

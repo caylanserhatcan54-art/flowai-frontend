@@ -8,20 +8,36 @@ export default function ChatDetailPage({ params }: any) {
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const API =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ai-shop-backend-1-um67.onrender.com/api";
+
   useEffect(() => {
     async function loadMessages() {
-      const res = await fetch(
-        `http://localhost:4000/chats/detail?chatId=${chatId}`
-      );
+      try {
+        const res = await fetch(
+          `${API}/chats/detail?chatId=${chatId}`,
+          {
+            method: "GET",
+            cache: "no-store",
+          }
+        );
 
-      const data = await res.json();
-      if (data.success) setMessages(data.messages);
+        const data = await res.json();
 
-      setLoading(false);
+        if (data.success) {
+          setMessages(data.messages);
+        }
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Chat detail error:", err);
+        setLoading(false);
+      }
     }
 
     loadMessages();
-  }, [chatId]);
+  }, [chatId, API]);
 
   return (
     <div className="p-6">

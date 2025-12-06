@@ -1,6 +1,8 @@
 "use server";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://ai-shop-backend-1-um67.onrender.com/api";
 
 export async function registerAction(formData: FormData) {
   const shopName = formData.get("shopName");
@@ -20,9 +22,9 @@ export async function registerAction(formData: FormData) {
       return { error: data.error || "Kayıt başarısız" };
     }
 
-    // Cookie set YOK — sadece başarılı bilgisi dönüyoruz
     return { success: true, shopId: data.shopId };
-  } catch {
+  } catch (error) {
+    console.error("Register error:", error);
     return { error: "Sunucu hatası" };
   }
 }

@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-const API = "http://localhost:4000/api";
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://ai-shop-backend-1-um67.onrender.com/api";
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -14,10 +16,12 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const shopId = localStorage.getItem("shopId");
+    if (!shopId) {
+      setLoading(false);
+      return;
+    }
 
-    if (!shopId) return;
-
-    fetch(`${API}/shops/get?shopId=${shopId}`)
+    fetch(`${API}/shops/get?shopId=${shopId}`, { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         console.log("SHOP SETTINGS:", data);
@@ -29,6 +33,10 @@ export default function SettingsPage() {
           setPlatforms(data.shop.platforms || {});
         }
 
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Settings fetch error:", err);
         setLoading(false);
       });
   }, []);
@@ -56,7 +64,8 @@ export default function SettingsPage() {
       .then((d) => {
         if (d.ok) alert("Ayarlar kaydedildi!");
         else alert("Hata: " + d.error);
-      });
+      })
+      .catch((err) => alert("Bağlantı hatası: " + err.message));
   };
 
   if (loading) return <p className="text-white p-6">Yükleniyor...</p>;
@@ -89,7 +98,7 @@ export default function SettingsPage() {
             <option value="n11">N11</option>
             <option value="amazon">Amazon</option>
             <option value="shopier">Shopier</option>
-            <option value="shopify">Shopify</option>
+            <option value="shopify">Shopiy</option>
             <option value="ideasoft">Ideasoft</option>
             <option value="ikas">İkas</option>
             <option value="ciceksepeti">Çiçek Sepeti</option>

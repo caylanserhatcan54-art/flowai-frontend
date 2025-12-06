@@ -8,13 +8,17 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
 
+  const API =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ai-shop-backend-1-um67.onrender.com/api";
+
   const shopId = "demo-dükkanı";
 
   async function handleImage(e: any) {
     const file = e.target.files[0];
     if (!file) return;
 
-    // önizleme
+    // görüntü önizleme
     const previewURL = URL.createObjectURL(file);
     setPreview(previewURL);
 
@@ -32,17 +36,15 @@ export default function UploadPage() {
     setResult(null);
 
     try {
-      const res = await axios.post(
-        "http://localhost:4000/api/vision/analyze",
-        {
-          shopId,
-          imageBase64: base64,
-        }
-      );
+      const res = await axios.post(`${API}/vision/analyze`, {
+        shopId,
+        imageBase64: base64,
+      });
 
       setResult(res.data);
     } catch (err) {
-      console.error(err);
+      console.error("🔥 Vision API hata:", err);
+      setResult({ ok: false, error: "Görsel analiz yapılamadı" });
     }
 
     setLoading(false);

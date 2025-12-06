@@ -6,6 +6,10 @@ export default function IntegrationsPage() {
   const [shop, setShop] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  const API =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ai-shop-backend-1-um67.onrender.com/api";
+
   const platforms = [
     { id: "trendyol", name: "Trendyol" },
     { id: "hepsiburada", name: "Hepsiburada" },
@@ -30,8 +34,10 @@ export default function IntegrationsPage() {
 
       try {
         const res = await fetch(
-          `http://localhost:4000/api/shop/get?shopId=${shopId}`
+          `${API}/shop/get?shopId=${shopId}`,
+          { cache: "no-store" }
         );
+
         const data = await res.json();
         setShop(data.shop || null);
       } catch (err) {
@@ -43,7 +49,7 @@ export default function IntegrationsPage() {
     }
 
     loadShop();
-  }, []); // ❗ sadece 1 kere çalışsın
+  }, []); // sadece 1 kere çalışır
 
   if (loading)
     return (
@@ -54,11 +60,9 @@ export default function IntegrationsPage() {
 
   return (
     <div className="p-6">
-
       <h1 className="text-2xl font-bold mb-6">Entegrasyonlar</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
         {platforms.map((p) => {
           const isActive = shop?.activePlatforms?.includes(p.id);
 
@@ -80,7 +84,6 @@ export default function IntegrationsPage() {
             </div>
           );
         })}
-
       </div>
     </div>
   );

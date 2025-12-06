@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://ai-shop-backend-1-um67.onrender.com/api";
 
   const { searchParams } = new URL(request.url);
   const shopId = searchParams.get("shopId");
@@ -13,10 +13,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    const res = await fetch(`${API_URL}/shops/${shopId}`);
+    const res = await fetch(`${API_URL}/public/shop-info?shopId=${shopId}`);
     const data = await res.json();
     return NextResponse.json(data);
   } catch (err) {
+    console.error("Shop get error:", err);
     return NextResponse.json({ error: "Sunucu hatası" }, { status: 500 });
   }
 }

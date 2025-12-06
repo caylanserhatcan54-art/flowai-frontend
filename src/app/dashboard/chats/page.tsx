@@ -7,32 +7,40 @@ export default function ChatsPage() {
   const [loading, setLoading] = useState(true);
   const [chats, setChats] = useState<any[]>([]);
 
-  const shopId = typeof window !== "undefined"
-    ? localStorage.getItem("shopId")
-    : null;
+  const shopId =
+    typeof window !== "undefined" ? localStorage.getItem("shopId") : null;
+
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ai-shop-backend-1-um67.onrender.com/api";
 
   useEffect(() => {
     async function loadChats() {
       if (!shopId) return;
 
       const res = await fetch(
-        `http://localhost:4000/chats/list?shopId=${shopId}`
+        `${API_URL}/chats/list?shopId=${shopId}`,
+        {
+          method: "GET",
+          cache: "no-store"
+        }
       );
 
       const data = await res.json();
-      if (data.success) setChats(data.chats);
+
+      if (data.success) {
+        setChats(data.chats);
+      }
 
       setLoading(false);
     }
 
     loadChats();
-  }, [shopId]);
+  }, [shopId, API_URL]);
 
   if (loading) {
     return (
-      <div className="text-gray-700 text-lg p-6">
-        Sohbetler yükleniyor...
-      </div>
+      <div className="text-gray-700 text-lg p-6">Sohbetler yükleniyor...</div>
     );
   }
 
@@ -51,7 +59,9 @@ export default function ChatsPage() {
             href={`/dashboard/chats/${chat.id}`}
             className="block p-4 bg-white rounded-xl shadow hover:shadow-lg transition"
           >
-            <p className="font-semibold">{chat.lastMessage || "Yeni Sohbet"}</p>
+            <p className="font-semibold">
+              {chat.lastMessage || "Yeni Sohbet"}
+            </p>
             <p className="text-xs text-gray-500 mt-1">
               {new Date(chat.createdAt).toLocaleString()}
             </p>

@@ -1,11 +1,11 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function ChatUI() {
   const params = useSearchParams();
-  const shopId = params.get("shopId");
+  const shopId = params.get("shopId") || "default";
 
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
@@ -16,20 +16,23 @@ export default function ChatUI() {
     const userMsg = { role: "user", content: input };
     setMessages((m) => [...m, userMsg]);
 
-    const resp = await fetch("https://flowai.com.tr:3002/api/ai/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        shopId,
-        message: input,
-      }),
-    });
+    const resp = await fetch(
+      "https://ai-shop-backend-1-um67.onrender.com/ai/chat",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shopId,
+          message: input,
+        }),
+      }
+    );
 
     const data = await resp.json();
 
     const botMsg = {
       role: "assistant",
-      content: data.result || "Yanıt alınamadı...",
+      content: data.reply || "Yanıt alınamadı...",
     };
 
     setMessages((m) => [...m, botMsg]);
