@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://ai-shop-backend-1-um67.onrender.com";
+const API_URL = "https://ai-shop-backend-1-um67.onrender.com";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("serhat@test.com");
@@ -35,14 +33,15 @@ export default function LoginPage() {
       // token'ı kaydet
       if (typeof window !== "undefined") {
         localStorage.setItem("flowai_token", data.token);
+        localStorage.setItem("flowai_shopName", data.shopName || "");
       }
 
       alert("Giriş başarılı!");
-      // TODO: Dashboard'a yönlendir
+      // Sonra dashboard'a yönlendirirsin
       // window.location.href = "/dashboard";
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Bilinmeyen hata");
+      setError(err.message || "Bilinmeyen bir hata oluştu");
     } finally {
       setLoading(false);
     }
@@ -56,7 +55,7 @@ export default function LoginPage() {
         </h1>
 
         {error && (
-          <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+          <div className="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2">
             {error}
           </div>
         )}

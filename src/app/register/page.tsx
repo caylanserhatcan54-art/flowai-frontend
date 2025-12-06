@@ -1,8 +1,6 @@
 import { useState } from "react";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://ai-shop-backend-1-um67.onrender.com";
+const API_URL = "https://ai-shop-backend-1-um67.onrender.com";
 
 export default function RegisterPage() {
   const [shopName, setShopName] = useState("Serhat Store");
@@ -36,7 +34,7 @@ export default function RegisterPage() {
       setSuccess("Kayıt başarılı! Şimdi giriş yapabilirsiniz.");
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Bilinmeyen hata");
+      setError(err.message || "Bilinmeyen bir hata oluştu");
     } finally {
       setLoading(false);
     }
@@ -50,7 +48,7 @@ export default function RegisterPage() {
         </h1>
 
         {error && (
-          <div className="mb-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+          <div className="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2">
             {error}
           </div>
         )}
