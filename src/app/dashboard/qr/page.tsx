@@ -1,109 +1,76 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const BACKEND = "https://ai-shop-backend-2.onrender.com";
 
 export default function QRPage() {
-  const router = useRouter();
-  const [loaded, setLoaded] = useState(false);
-  const [shopId, setShopId] = useState<string>("");
+  const [shopData, setShopData] = useState<any>(null);
+  const shopId = typeof window !== "undefined" ? localStorage.getItem("shopId") : null;
 
   useEffect(() => {
-    const token = localStorage.getItem("shopToken");
+    if (!shopId) return;
 
-    if (!token) {
-      router.replace("/login");
-      return;
+    async function loadShopData() {
+      const res = await fetch(`${BACKEND}/api/public/shop/${shopId}`);
+      const json = await res.json();
+      setShopData(json);
     }
 
-    const membership = localStorage.getItem("membership");
+    loadShopData();
+  }, [shopId]);
 
-    if (!membership || membership !== "active") {
-      router.replace("/dashboard/payment");
-      return;
-    }
-
-    try {
-      const decoded: any = JSON.parse(atob(token.split(".")[1]));
-      const id = decoded.email.split("@")[0];
-      setShopId(id);
-      setLoaded(true);
-    } catch {
-      router.replace("/login");
-    }
-  }, []);
-
-  if (!loaded) {
-    return <div className="text-white p-10 text-xl">Yükleniyor...</div>;
+  if (!shopData) {
+    return (
+      <div className="text-white text-center p-20 text-2xl">
+        Yükleniyor...
+      </div>
+    );
   }
 
-  const qrUrl = `${BACKEND}/api/qr-image/${shopId}`;
   const aiUrl = `https://flowai.app/${shopId}`;
-
-  function copyLink() {
-    navigator.clipboard.writeText(aiUrl);
-    alert("🔗 Link kopyalandı!");
-  }
-
-  function downloadQR() {
-    window.open(qrUrl, "_blank");
-  }
+  const qrUrl = `${BACKEND}/api/qr-image/${shopId}`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A0E27] to-[#190332] text-white p-12">
+    <div className="min-h-screen bg-gradient-to-br from-[#0B0F2B] to-[#1C034D] text-white p-10">
 
-      <h1 className="text-4xl font-bold mb-4">🔗 AI Link & QR Kod</h1>
+      <h1 className="text-4xl font-bold mb-4">🎯 Hazır Akıllı Link & QR Kod</h1>
       <p className="text-lg opacity-80 mb-10">
-        Müşterileriniz bu link ve QR ile yapay zekaya ulaşabilir 🎉
+        Müşterileriniz bu linkten yapay zekaya ulaşabilir 👇
       </p>
 
-      <div className="grid grid-cols-2 gap-10 max-w-5xl">
+      {/* LINK CARD */}
+      <div className="bg-white/10 p-6 rounded-xl border border-white/20 max-w-xl">
+        <p className="text-lg break-all mb-4">{aiUrl}</p>
 
-        {/* Link Alanı */}
-        <div className="bg-white/10 border border-white/20 p-8 rounded-xl">
-          <h2 className="text-2xl font-semibold mb-4">🌐 Özel AI Link</h2>
-
-          <div className="bg-black/50 px-4 py-3 rounded mb-4 break-all">
-            {aiUrl}
-          </div>
-
-          <button
-            onClick={copyLink}
-            className="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg"
-          >
-            📋 Linki Kopyala
-          </button>
-        </div>
-
-        {/* QR Kodu Alanı */}
-        <div className="bg-white/10 border border-white/20 p-8 rounded-xl flex flex-col items-center">
-          <h2 className="text-2xl font-semibold mb-4">🖼 QR Kod</h2>
-
-          <img
-            src={qrUrl}
-            alt="QR"
-            className="w-64 h-64 bg-white rounded-lg p-2 mb-6"
-          />
-
-          <button
-            onClick={downloadQR}
-            className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg"
-          >
-            ⬇ QR Kodu İndir
-          </button>
-        </div>
+        <button
+          onClick={() => navigator.clipboard.writeText(aiUrl)}
+          className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg"
+        >
+          📋 Linki Kopyala
+        </button>
       </div>
 
-      <div className="mt-12 text-lg opacity-80">
-        📌 Bu link & QR nereye eklenebilir?
-        <ul className="list-disc ml-5 mt-2 space-y-1">
-          <li>Ürün açıklamasına</li>
-          <li>Mağaza banner alanına</li>
-          <li>Sosyal medya bio linkine</li>
-          <li>Whatsapp butonuna</li>
-          <li>Kargo poşeti, ürün etiketine</li>
+      {/* QR CARD */}
+      <div className="bg-white/10 p-6 rounded-xl border border-white/20 max-w-xl mt-8 flex flex-col">
+        <img src={qrUrl} className="w-64 h-64 mx-auto bg-white rounded-xl p-2" />
+        
+        <button
+          onClick={() => window.open(qrUrl, "_blank")}
+          className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg mt-6"
+        >
+          ⬇ QR Kodu İndir
+        </button>
+      </div>
+
+      <div className="mt-10 text-lg opacity-90">
+        🎁 Önerilen kullanım yerleri:
+        <ul className="list-disc ml-6 mt-2 text-base">
+          <li>Ürün açıklamasına ekleyin</li>
+          <li>Mağaza bannerına koyun</li>
+          <li>Paketlerin üzerine QR etiketi basın</li>
+          <li>Instagram bio’ya ekleyin</li>
+          <li>WhatsApp linkine ekleyin</li>
         </ul>
       </div>
     </div>
