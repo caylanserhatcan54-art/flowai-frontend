@@ -6,13 +6,10 @@ export default function PaymentPage() {
   const router = useRouter();
 
   async function activate() {
-    // Geçici aktivasyon
     localStorage.setItem("membership", "active");
-
     alert("🎉 Üyeliğin aktif edildi!");
 
-    // Artık QR & Link sayfasına gider
-    router.push("/dashboard/ai-link");
+    router.push("/dashboard/link"); // ✔ Doğru sayfa burası!
   }
 
   return (
@@ -20,33 +17,28 @@ export default function PaymentPage() {
       <h1 className="text-4xl font-bold mb-6">🎯 FlowAI Üyeliğini Aktif Et</h1>
 
       <div className="bg-white/10 border border-white/10 rounded-xl max-w-xl w-full p-6">
-
         <p className="text-lg mb-4 opacity-90">
           FlowAI satış asistanını kullanmaya başlamak için bir plan seç.
         </p>
 
         <div className="space-y-5">
 
-          <div
-            className="border border-white/20 rounded-lg p-4 hover:bg-white/10 transition cursor-pointer"
+          <div className="border border-white/20 rounded-lg p-4 hover:bg-white/10 transition cursor-pointer"
             onClick={() => localStorage.setItem("plan", "standard")}
           >
             <h2 className="text-xl font-semibold">⭐ Standart Plan — 499 TL / Ay</h2>
             <ul className="text-sm opacity-90 mt-2 space-y-1">
-              <li>✔ Tek e-ticaret platformu</li>
+              <li>✔ Tek platformda kullanım</li>
               <li>✔ AI Chat & Analiz</li>
               <li>✔ QR & Akıllı Link</li>
               <li>✔ Kurulum desteği</li>
             </ul>
           </div>
 
-          <div
-            className="border border-yellow-400/40 rounded-lg p-4 hover:bg-yellow-400/20 transition cursor-pointer"
+          <div className="border border-yellow-400/40 rounded-lg p-4 hover:bg-yellow-400/20 transition cursor-pointer"
             onClick={() => localStorage.setItem("plan", "premium")}
           >
-            <h2 className="text-xl font-semibold text-yellow-300">
-              🔥 Premium Plan — 899 TL / Ay
-            </h2>
+            <h2 className="text-xl font-semibold text-yellow-300">🔥 Premium Plan — 899 TL / Ay</h2>
             <ul className="text-sm opacity-90 mt-2 space-y-1">
               <li>✔ Tüm platformlarda aktif</li>
               <li>✔ Gelişmiş ürün önerisi</li>
@@ -71,4 +63,3 @@ export default function PaymentPage() {
     </div>
   );
 }
-
