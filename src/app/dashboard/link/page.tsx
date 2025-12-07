@@ -3,13 +3,17 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+const BACKEND = "https://ai-shop-backend-2.onrender.com";
+
 export default function LinkPage() {
   const router = useRouter();
-  const [shopName, setShopName] = useState("");
-  const [link, setLink] = useState("");
-  const [planActive, setPlanActive] = useState(false);
-  const [qrImage, setQrImage] = useState("");
 
+  const [shopId, setShopId] = useState<string | null>(null);
+  const [shopName, setShopName] = useState("");
+  const [active, setActive] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // ABONELİK KONTROLÜ
   useEffect(() => {
     const token = localStorage.getItem("shopToken");
     if (!token) {
@@ -18,123 +22,140 @@ export default function LinkPage() {
     }
 
     try {
-      const decoded = JSON.parse(atob(token.split(".")[1]));
-
+      const decoded: any = JSON.parse(atob(token.split(".")[1]));
+      const emailPrefix = decoded.email.split("@")[0];
+      setShopId(emailPrefix);
       setShopName(decoded.shopName);
-      setLink(`https://flowai.link/${decoded.shopId}`);
 
-      // aktif plan var mı?
-      setPlanActive(decoded.activePlan ? true : false);
-
-      // QR url hazır!
-      setQrImage(`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=https://flowai.link/${decoded.shopId}`);
+      checkSubscription(emailPrefix);
     } catch {
       router.push("/login");
     }
   }, []);
 
+  async function checkSubscription(id: string) {
+    try {
+      const res = await fetch(`${BACKEND}/api/shop/${id}`);
+      const data = await res.json();
+
+      if (!data.ok) {
+        router.push("/dashboard/settings");
+        return;
+      }
+
+      if (!data.shop.subscriptionActive) {
+        setActive(false);
+      } else {
+        setActive(true);
+      }
+
+      setLoading(false);
+    } catch (err) {
+      router.push("/dashboard/settings");
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-white text-xl">
+        Yükleniyor...
+      </div>
+    );
+  }
+
+  if (!active) {
+    return (
+      <div className="min-h-screen flex flex-col justify-center items-center text-white">
+        <h2 className="text-3xl font-bold mb-3">🔒 Link & QR Kilitli</h2>
+        <p className="opacity-90 text-lg mb-6">
+          Bu bölümü açmak için abonelik satın almalısınız.
+        </p>
+
+        <button
+          onClick={() => router.push("/dashboard/settings")}
+          className="bg-red-600 hover:bg-red-700 px-8 py-4 rounded-lg text-xl font-medium"
+        >
+          💳 Ödeme Yap ve Aktifleştir
+        </button>
+      </div>
+    );
+  }
+
+  // ABONELİK AKTİFSE BURAYI GÖSTER
+  const qrUrl = `${BACKEND}/api/qr-image/${shopId}`;
+  const aiUrl = `https://flowai.app/${shopId}`;
+
+  async function copyLink() {
+    await navigator.clipboard.writeText(aiUrl);
+    alert("🔗 Link panoya kopyalandı!");
+  }
+
   function downloadQR() {
-    const a = document.createElement("a");
-    a.href = qrImage;
-    a.download = "flowai-qr.png";
-    a.click();
+    window.open(qrUrl, "_blank");
   }
 
   return (
-    <div className="min-h-screen px-16 py-12 text-white bg-gradient-to-br from-[#080A22] to-[#190542]">
+    <div className="min-h-screen bg-gradient-to-br from-[#0A0E27] to-[#1C034C] text-white p-12">
 
-      <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
-        🔗 AI Link & QR Kod
-      </h1>
-      <p className="opacity-80 mb-10 max-w-xl">
-        Mağazana özel QR kodu ve linki buradan alabilirsin. Bu kodları mağaza bannerı,
-        WhatsApp mesajların, ürün açıklamaları veya promosyon kartlarında kullanabilirsin.
+      <h1 className="text-4xl font-bold mb-2">🔗 AI Link & QR Kod</h1>
+      <p className="opacity-80 text-lg mb-8">
+        Mağaza müşterileriniz yapay zekaya buradan ulaşabilir 🎯
       </p>
 
-      {/* 🟥 ÖDEME YOKSA GÖRÜNEN ALAN */}
-      {!planActive && (
-        <div className="bg-red-600/20 border border-red-400 p-10 rounded-xl text-center max-w-xl">
-          <h2 className="text-2xl font-bold mb-2">🔒 Bu özellik aktif değil</h2>
-          <p className="opacity-90 mb-6">
-            QR kod ve özel link yalnızca aktif üyeliklerde kullanılabilir.
-          </p>
+      <div className="grid grid-cols-2 gap-10 max-w-6xl">
 
-          <a
-            href="/dashboard/settings"
-            className="bg-yellow-300 hover:bg-yellow-400 text-black font-semibold px-6 py-3 rounded-lg"
+        {/* LEFT CARD */}
+        <div className="bg-white/10 p-8 rounded-xl border border-white/10 flex flex-col shadow-md">
+          <h2 className="text-2xl font-semibold mb-4">📌 Özel AI Link</h2>
+
+          <div className="bg-black/40 px-4 py-3 rounded break-all mb-5 text-lg border border-white/10">
+            {aiUrl}
+          </div>
+
+          <button
+            onClick={copyLink}
+            className="bg-green-600 hover:bg-green-700 py-3 rounded-lg font-medium text-lg"
           >
-            💳 Üyeliği Aktif Et
-          </a>
-
-          <p className="text-sm opacity-70 mt-4">
-            7 gün içinde koşulsuz iptal & iade garantisi 💙
-          </p>
+            📋 Linki Kopyala
+          </button>
         </div>
-      )}
 
-      {planActive && (
-        <div className="flex gap-14">
+        {/* RIGHT CARD */}
+        <div className="bg-white/10 p-8 rounded-xl border border-white/10 flex flex-col items-center shadow-md">
+          <h2 className="text-2xl font-semibold mb-4">🖼 QR Kod</h2>
 
-          {/* SOL BLOK */}
-          <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-8 w-[420px]">
-            <h2 className="text-xl font-semibold mb-2">🌐 Mağazana Özel Link</h2>
+          <img
+            src={qrUrl}
+            alt="QR Code"
+            className="w-72 h-72 rounded-lg bg-white p-3 shadow-lg mb-5"
+          />
 
-            <div className="bg-black/30 rounded p-4 font-mono text-sm break-all">
-              {link}
-            </div>
-
-            <button
-              onClick={() => navigator.clipboard.writeText(link)}
-              className="mt-4 bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-lg"
-            >
-              📋 Linki Kopyala
-            </button>
-
-            <hr className="my-8 opacity-40" />
-
-            <h2 className="text-xl font-semibold mb-4">🧾 QR Kod</h2>
-
-            <img
-              src={qrImage}
-              className="w-48 h-48 border border-white/20 rounded-lg mx-auto"
-            />
-
-            <button
-              onClick={downloadQR}
-              className="mt-6 bg-green-600 hover:bg-green-700 px-4 py-3 rounded-lg w-full"
-            >
-              ⬇ QR Kod İndir
-            </button>
-          </div>
-
-          {/* SAĞ TARAF BİLGİ KUTUSU */}
-          <div className="flex flex-col justify-center max-w-xl leading-relaxed opacity-90 space-y-6">
-
-            <div>
-              <h3 className="text-2xl font-semibold mb-2">Bu Linki Nereye Koymalısın?</h3>
-              <ul className="list-disc ml-6 space-y-1">
-                <li>Trendyol ürün açıklamasına</li>
-                <li>Hepsiburada ürün açıklamasına</li>
-                <li>Instagram bio alanına</li>
-                <li>WhatsApp otomatik mesajına</li>
-                <li>Sipariş teşekkür mesajına</li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-2xl font-semibold mb-2">QR Kod Nereye Koymalısın?</h3>
-              <ul className="list-disc ml-6 space-y-1">
-                <li>Ürün paketlemesine</li>
-                <li>Hediye notuna</li>
-                <li>Kargo kutusuna</li>
-                <li>Teşekkür kartlarına</li>
-                <li>Kampanya broşürüne</li>
-              </ul>
-            </div>
-
-          </div>
+          <button
+            onClick={downloadQR}
+            className="bg-blue-600 hover:bg-blue-700 py-3 px-8 rounded-lg font-medium text-lg"
+          >
+            ⬇ QR Kodu İndir
+          </button>
         </div>
-      )}
+      </div>
+
+      {/* INFORMATION BOX */}
+      <div className="mt-14 bg-white/10 p-8 rounded-xl border border-white/10 shadow-md">
+        <h3 className="text-xl font-semibold mb-4">📌 Nereye Koymanız Gerekiyor?</h3>
+
+        <ul className="opacity-95 space-y-2 text-lg">
+          <li>✔ Ürün açıklamasına ekleyin</li>
+          <li>✔ Mağaza banner bölümüne koyun</li>
+          <li>✔ WhatsApp – iletişim linki olarak paylaşın</li>
+          <li>✔ Instagram bio / link alanına ekleyin</li>
+          <li>✔ Kargo paketleri içine QR kartviziti basın</li>
+          <li>✔ Kampanya broşürleri üzerine yapıştırın</li>
+        </ul>
+
+        <p className="mt-5 opacity-80">
+          Yani; müşterinin görebileceği her yere ekleyin, dönüşüm artacaktır 🚀
+        </p>
+      </div>
     </div>
   );
 }
