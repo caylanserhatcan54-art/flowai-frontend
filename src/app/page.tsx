@@ -194,67 +194,78 @@ export default function HomePage() {
       </section>
 
       {/* FİYATLANDIRMA */}
-      <section id="pricing" className="max-w-6xl mx-auto px-4 py-10 md:py-14 border-t border-slate-800">
-        <h2 className="text-2xl md:text-3xl font-bold mb-3">Fiyatlandırma (Aylık)</h2>
+<section id="pricing" className="max-w-6xl mx-auto px-4 py-10 md:py-14 border-t border-slate-800">
+  <h2 className="text-2xl md:text-3xl font-bold mb-3">Fiyatlandırma (Aylık)</h2>
 
-        <p className="text-slate-300 text-sm md:text-base mb-8">
-          Aşağıdan ihtiyacına uygun planı seçebilirsin. Aboneliğini istediğin zaman değiştirebilirsin.
-        </p>
+  <p className="text-slate-300 text-sm md:text-base mb-3">
+    Aşağıdan ihtiyacına uygun planı seçebilirsin. Üyeliğini istediğin zaman yükseltebilir veya durdurabilirsin.
+  </p>
 
-        <div className="grid md:grid-cols-2 gap-6">
+  <p className="text-green-300 text-sm font-semibold mb-8">
+    🎁 7 gün içinde şartsız iptal ve ücret iadesi garantisi!
+  </p>
 
-          {/* Standart Plan */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 flex flex-col">
-            <h3 className="text-xl font-semibold mb-1">⭐ Standart Plan – 499 TL / ay</h3>
-            <p className="text-sm text-slate-300 mb-4">
-              Sadece 1 adet e-ticaret platformu için kullanım hakkı.
-            </p>
+  <div className="grid md:grid-cols-2 gap-6">
 
-            <ul className="text-sm text-slate-300 list-disc list-inside space-y-1 mb-4">
-              <li>1 platform entegrasyonu</li>
-              <li>AI Chat Asistanı</li>
-              <li>Akıllı Ürün Analizi</li>
-              <li>Sepet önerileri</li>
-              <li>Chrome ürün içe aktarma</li>
-              <li>AI Try-On (Yakında)</li>
-            </ul>
+    {/* Standart Plan */}
+    <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 flex flex-col">
+      <h3 className="text-xl font-semibold mb-1">⭐ Standart Plan – 499 TL / ay</h3>
 
-            <div className="mt-auto">
-              <Link href="/register" className="w-full inline-flex items-center justify-center rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-600">
-                Standart Planı Kullan
-              </Link>
-            </div>
-          </div>
+      <p className="text-sm text-slate-300 mb-4">
+        Sadece 1 adet e-ticaret platformu için kullanım hakkı.
+      </p>
 
-          {/* Premium Plan */}
-          <div className="rounded-2xl border border-yellow-400/40 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-6 flex flex-col">
-            <div className="inline-flex items-center gap-2 text-xs text-yellow-300 mb-2">
-              <span className="px-2 py-0.5 rounded-full border border-yellow-400/40">En Popüler</span>
-            </div>
+      <ul className="text-sm text-slate-300 list-disc list-inside space-y-1 mb-4">
+        <li>1 platform entegrasyonu (örn: Trendyol)</li>
+        <li>AI Chat Asistanı</li>
+        <li>Akıllı Ürün Analizi</li>
+        <li>Sepet yönlendirme</li>
+        <li>Chrome uzantısı ile ürün içe aktarma</li>
+        <li>AI Try-On (Yakında)</li>
+      </ul>
 
-            <h3 className="text-xl font-semibold mb-1">🔥 Premium Plan – 899 TL / ay</h3>
+      <div className="mt-auto">
+        <Link
+          href="/register"
+          className="w-full inline-flex items-center justify-center rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-600"
+        >
+          Standart Planı Kullan
+        </Link>
+      </div>
+    </div>
 
-            <p className="text-sm text-slate-200 mb-4">
-              Tüm e-ticaret platformlarını aynı anda kullanabilirsin.
-            </p>
+    {/* Premium Plan */}
+    <div className="rounded-2xl border border-yellow-400/40 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-6 flex flex-col">
+      <div className="inline-flex items-center gap-2 text-xs text-yellow-300 mb-2">
+        <span className="px-2 py-0.5 rounded-full border border-yellow-400/40">En Popüler</span>
+      </div>
 
-            <ul className="text-sm text-slate-100 list-disc list-inside space-y-1 mb-4">
-              <li>Tüm platform entegrasyonları</li>
-              <li>Çoklu ürün havuzu</li>
-              <li>Gelişmiş AI Try-On (Yakında)</li>
-              <li>Çapraz platform önerileri</li>
-              <li>7/24 AI destek sistemi</li>
-              <li>Gelişmiş satış analizleri</li>
-            </ul>
+      <h3 className="text-xl font-semibold mb-1">🔥 Premium Plan – 899 TL / ay</h3>
 
-            <div className="mt-auto">
-              <Link href="/register" className="w-full inline-flex items-center justify-center rounded-lg bg-yellow-400 px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-yellow-300">
-                Premium Planı Kullan
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      <p className="text-sm text-slate-200 mb-4">
+        Tüm e-ticaret platformlarını aynı anda kullanabilirsin.
+      </p>
+
+      <ul className="text-sm text-slate-100 list-disc list-inside space-y-1 mb-4">
+        <li>Tüm platform entegrasyonları</li>
+        <li>Gelişmiş AI Try-On (Yakında)</li>
+        <li>Çoklu ürün havuzu</li>
+        <li>Çapraz platform önerileri</li>
+        <li>7/24 AI destek sistemi</li>
+        <li>Gelişmiş satış analizi raporları</li>
+      </ul>
+
+      <div className="mt-auto">
+        <Link
+          href="/register"
+          className="w-full inline-flex items-center justify-center rounded-lg bg-yellow-400 px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-yellow-300"
+        >
+          Premium Planı Kullan
+        </Link>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* SSS – Sıkça Sorulan Sorular */}
       <section id="faq" className="max-w-6xl mx-auto px-4 py-10 md:py-14 border-t border-slate-800">
