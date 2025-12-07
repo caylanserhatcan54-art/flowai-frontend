@@ -1,11 +1,9 @@
 "use client";
-
 import Link from "next/link";
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50">
-
       {/* HERO */}
       <header className="border-b border-slate-800 bg-gradient-to-b from-slate-950 via-slate-950 to-slate-900">
         <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
@@ -27,10 +25,7 @@ export default function HomePage() {
             <Link href="/login" className="text-sm text-slate-300 hover:text-white">
               Giriş Yap
             </Link>
-            <Link
-              href="/register"
-              className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600"
-            >
+            <Link href="/register" className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600">
               Kayıt Ol
             </Link>
           </div>
@@ -49,107 +44,118 @@ export default function HomePage() {
             </h1>
 
             <p className="mt-4 text-slate-300 text-sm md:text-base leading-relaxed">
-              FlowAI, mağazana 7/24 çalışan bir yapay zekâ satış temsilcisi sağlar.
-              Müşteriyi karşılar, ürün detaylarını anlatır, beden ve uyum bilgisi verir,
-              güven oluşturur ve sepete yönlendirir. Yakında TRY-ON ile müşteri kendi
-              fotoğrafını yükleyip ürünü üzerinde görebilecek 🤖🛍️.
+              Trendyol, Hepsiburada, N11, Amazon TR ve ÇiçekSepeti ile uyumlu.
+              Mağazana 7/24 çalışan bir yapay zekâ satış temsilcisi ekle;
+              müşterileri karşılasın, ürünleri analiz etsin, soruları yanıtlasın ve sepete yönlendirsin.
+              Fotoğraf yükleyen müşteriler için AI Try-On (Yakında) özelliği ile ürünü müşterinin üzerine otomatik yerleştirir.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/register" className="rounded-lg bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-600">
+              <Link
+                href="/register"
+                className="rounded-lg bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-600"
+              >
                 Hemen Başla
               </Link>
-
-              <a href="#pricing" className="rounded-lg border border-slate-700 px-5 py-2.5 text-sm font-semibold text-slate-200 hover:border-slate-500">
+              <a
+                href="#pricing"
+                className="rounded-lg border border-slate-700 px-5 py-2.5 text-sm font-semibold text-slate-200 hover:border-slate-500"
+              >
                 Fiyatları Gör
               </a>
             </div>
+
+            <div className="mt-6 text-xs text-slate-400 space-y-1">
+              <p>✅ 10 saniyede embed koduyla kurulum</p>
+              <p>✅ Tüm konuşmalar yönetim panelinde kayıt altında</p>
+              <p>✅ Tüm büyük pazaryerleriyle uyumlu</p>
+            </div>
           </div>
 
-          {/* RIGHT – CHAT MOCKUP */}
+          {/* RIGHT – simple mockup */}
           <div className="hidden md:block">
             <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-2xl">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-semibold text-slate-200">
-                  Canlı Sohbet – FlowAI
-                </span>
-                <span className="text-[10px] text-emerald-400">
-                  7/24 Aktif • AI
-                </span>
+                <span className="text-sm font-semibold text-slate-200">Canlı Sohbet – FlowAI</span>
+                <span className="text-[10px] text-emerald-400">7/24 Aktif • AI</span>
               </div>
-
               <div className="space-y-3 text-sm">
                 <div className="w-4/5 rounded-xl bg-slate-800 px-3 py-2 text-slate-100">
                   Merhaba 👋 Ben FlowAI. Ne tarz bir ürün arıyorsunuz?
                 </div>
-
                 <div className="flex justify-end">
                   <div className="w-3/4 rounded-xl bg-blue-600 px-3 py-2 text-right text-slate-50">
-                    Günlük kullanıma uygun bir sweatshirt arıyorum.
+                    Günlük kullanıma uygun, kapüşonlu bir sweatshirt arıyorum.
                   </div>
                 </div>
-
                 <div className="w-4/5 rounded-xl bg-slate-800 px-3 py-2 text-slate-100">
-                  Sizin için Trendyol mağazanızdaki 3 ürünü buldum. Ayrıca dilerseniz
-                  fotoğraf yükleyin üzerinizde nasıl duracağını gösterebilirim 🧠🧥
+                  Sizin için mağazanızdaki 3 ürünü buldum. Ayrıca isterseniz fotoğraf yükleyin, üzerinizde nasıl duracağını gösterebilirim. 🧠🧥
                 </div>
               </div>
-
               <div className="mt-4 border-t border-slate-800 pt-3 text-xs text-slate-500">
-                Bu bir önizlemedir. Gerçek konuşmalar panelinizde görüntülenebilir.
+                Bu sadece bir önizlemedir. Gerçek sohbetleri panelden takip edebilirsiniz.
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* FAQ */}
-      <section id="faq" className="max-w-6xl mx-auto px-4 py-16 border-t border-slate-800">
-        <h2 className="text-3xl font-bold mb-4">Sıkça Sorulan Sorular</h2>
+      {/* PLATFORMLAR */}
+      <section id="platforms" className="max-w-6xl mx-auto px-4 py-10 md:py-14">
+        <h2 className="text-2xl md:text-3xl font-bold mb-3">Desteklenen Platformlar</h2>
+        <p className="text-slate-300 text-sm md:text-base mb-6">
+          FlowAI şu anda Türkiye’de kullanılan büyük e-ticaret altyapıları ile tam uyumlu çalışır.
+        </p>
 
-        <div className="space-y-5 text-sm">
-          <FAQItem
-            q="FlowAI nasıl çalışır?"
-            a="Mağazanızı Chrome uzantısıyla tarayıp ürünleri içeri aktarıyorsunuz. Sonrasında müşteriler QR kod veya özel link ile chatbot’a bağlanıyor. AI tüm cevapları ürünleriniz üzerinden verir."
-          />
-
-          <FAQItem
-            q="QR ve bağlantı linki nereye eklenebilir?"
-            a="Ürün açıklamasına, mağaza banner’ına, sosyal medya linklerinize, WhatsApp kanallarınıza ve paket içi kartvizitlere ekleyebilirsiniz."
-          />
-
-          <FAQItem
-            q="Chrome uzantısı ne işe yarar?"
-            a="Mağaza sayfanızı açıp ‘Ürünleri Tara’ diyerek ürün başlıklarını, görsellerini, fiyatını ve varyant bilgilerini Firestore’a aktarır."
-          />
-
-          <FAQItem
-            q="Ürünler değişirse otomatik güncellenir mi?"
-            a="Şu an için manuel güncelleme ile ekleniyor, yakında tam otomatik güncelleme desteği eklenecek."
-          />
-
-          <FAQItem
-            q="AI Try-On çalışıyor mu?"
-            a="Yakında aktif olacak 🎉 Müşteri kendi fotoğrafını yükleyip ürünü üzerinde görebilecek."
-          />
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+          {[
+            "Trendyol",
+            "Hepsiburada",
+            "N11",
+            "Amazon TR",
+            "ÇiçekSepeti",
+          ].map((name) => (
+            <div
+              key={name}
+              className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 flex items-center justify-center text-center text-slate-200"
+            >
+              {name}
+            </div>
+          ))}
         </div>
       </section>
 
+      {/* FEATURES */}
+      <section
+        id="features"
+        className="max-w-6xl mx-auto px-4 py-10 md:py-14 border-t border-slate-800"
+      >
+        <h2 className="text-2xl md:text-3xl font-bold mb-3">FlowAI’nin Özellikleri</h2>
+        <p className="text-slate-300 text-sm md:text-base mb-8">
+          Satışı artırmaya odaklı, uçtan uca AI otomasyonu.
+        </p>
 
+        <div className="grid md:grid-cols-2 gap-6">
+
+          {/* SINGLE CHANGE YOU ASKED HERE */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+            <h3 className="font-semibold text-lg mb-2">🪄 AI Try-On (Yakında)</h3>
+            <p className="text-sm text-slate-300 mb-2">
+              Müşteri fotoğraf yüklediğinde:
+            </p>
+            <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
+              <li>Ürünü otomatik olarak görüntüye yerleştirir</li>
+              <li>Telefon kılıfını modele göre gösterir</li>
+              <li>Çanta duruşunu simüle eder</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
       <footer className="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
-        FlowAI © {new Date().getFullYear()} — Yapay Zeka Satış Asistanı
+        FlowAI © {new Date().getFullYear()} – Yapay Zeka Satış Asistanı
       </footer>
-    </div>
-  );
-}
-
-
-// FAQ item component
-function FAQItem({ q, a }: { q: string; a: string }) {
-  return (
-    <div className="rounded-lg bg-slate-900 border border-slate-800 p-4">
-      <p className="font-semibold">{q}</p>
-      <p className="text-slate-300 mt-1">{a}</p>
     </div>
   );
 }
