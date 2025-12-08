@@ -1,24 +1,26 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 
 const BACKEND = "https://ai-shop-backend-2.onrender.com";
 
-export default function AiChatPage({ params }: any) {
-  const shopId = params?.shopId ?? null;
+export default function AiChatPage() {
+  const { shopId } = useParams(); // 🔥 BURADAN ALIYORUZ
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // İlk karşılama mesajı
+    if (!shopId) return;
+
     setMessages([
       {
         role: "assistant",
         content:
-          "Merhaba 👋 Ben FlowAI! Aradığın ürünleri söyleyebilirsin. Beden, renk veya kullanım amacını da yazarsan daha iyi öneririm.",
+          `Merhaba 👋 Ben FlowAI! '${shopId}' mağazasına özel ürün tavsiyesi yapabilirim. Ne arıyorsun?`,
       },
     ]);
-  }, []);
+  }, [shopId]);
 
   async function sendMessage() {
     if (!input.trim()) return;
@@ -41,7 +43,7 @@ export default function AiChatPage({ params }: any) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          shopId, // 📌 BURASI EN ÖNEMLİ
+          shopId,     // 🔥 Kesin gidiyor
           messages: newMessages,
         }),
       });
@@ -52,15 +54,15 @@ export default function AiChatPage({ params }: any) {
         ...prev,
         {
           role: "assistant",
-          content: data.reply ?? "Şu anda cevap oluşturamadım, tekrar deneyebilirsin.",
+          content: data.reply ?? "Şu an cevap üretemiyorum.",
         },
       ]);
-    } catch (err) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: "⚠️ Bağlantıda geçici bir sorun çıktı. Lütfen tekrar dene.",
+          content: "❌ Bağlantı hatası, tekrar dene.",
         },
       ]);
     }
@@ -72,18 +74,18 @@ export default function AiChatPage({ params }: any) {
   return (
     <div className="min-h-screen bg-[#0A0F2B] text-white flex flex-col">
       <div className="p-4 text-center border-b border-white/10 text-lg font-semibold">
-        FlowAI Chat – {shopId?.toUpperCase()}
+        FlowAI Chat – {(shopId as string)?.toUpperCase()}
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
         {messages.map((m, i) => (
           <div key={i}>
             {m.role === "user" ? (
-              <div className="bg-blue-600 p-2 rounded-md text-right ml-auto w-fit">
+              <div className="bg-blue-600 p-2 rounded-md ml-auto w-fit">
                 {m.content}
               </div>
             ) : (
-              <div className="bg-white/20 p-2 rounded-md w-fit">
+              <div className="bg-white/20 p-2 rounded-md w-fit whitespace-pre-line">
                 {m.content}
               </div>
             )}
@@ -91,9 +93,7 @@ export default function AiChatPage({ params }: any) {
         ))}
 
         {loading && (
-          <div className="text-sm opacity-70 animate-pulse">
-            AI düşünüyor...
-          </div>
+          <div className="text-sm opacity-50 animate-pulse">AI yazıyor...</div>
         )}
       </div>
 
@@ -108,7 +108,7 @@ export default function AiChatPage({ params }: any) {
         <button
           onClick={sendMessage}
           disabled={loading}
-          className="bg-blue-500 px-4 rounded-md hover:bg-blue-600"
+          className="bg-blue-500 px-4 py-2 rounded-md"
         >
           Gönder
         </button>
