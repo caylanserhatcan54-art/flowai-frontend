@@ -17,7 +17,7 @@ export default function AIChatPage() {
 
   const BACKEND = "https://ai-shop-backend-2.onrender.com";
 
-  // mağaza kontrolü
+  // mağaza kontrol
   async function checkShop() {
     try {
       const res = await fetch(`${BACKEND}/api/public/shop/${shopId}`);
@@ -43,12 +43,15 @@ export default function AIChatPage() {
     setInput("");
 
     try {
-      const res = await fetch(`${BACKEND}/api/chat/${shopId}`, {
+      const res = await fetch(`${BACKEND}/api/public/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ message: msg })
+        body: JSON.stringify({
+          shopId,
+          message: msg
+        })
       });
 
       const data = await res.json();
@@ -68,7 +71,7 @@ export default function AIChatPage() {
     checkShop();
   }, []);
 
-  // LOADING SCREEN
+  // Yükleniyor ekranı
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white text-xl">
@@ -77,12 +80,11 @@ export default function AIChatPage() {
     );
   }
 
-  // SHOP NOT FOUND
   if (!shopExists) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-white text-center gap-4">
         <h1 className="text-3xl font-bold">❌ Mağaza bulunamadı</h1>
-        <p>Bu mağaza artık aktif olmayabilir veya hiç kayıt edilmemiş olabilir.</p>
+        <p>Bu mağaza aktif olmayabilir veya henüz tanımlanmamış olabilir.</p>
       </div>
     );
   }
@@ -90,14 +92,14 @@ export default function AIChatPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#06071A] to-[#120022] text-white flex flex-col">
 
-      {/* CHAT MESSAGES */}
+      {/* Mesaj alanı */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
-        {messages.map((msg, index) => (
+        {messages.map((msg, idx) => (
           <div
-            key={index}
+            key={idx}
             className={`max-w-[75%] px-4 py-2 rounded-xl text-sm ${
               msg.role === "assistant"
-                ? "bg-[#1A103C] text-purple-200"
+                ? "bg-[#25104A] text-purple-200"
                 : "bg-blue-600 text-white ml-auto"
             }`}
           >
@@ -106,7 +108,7 @@ export default function AIChatPage() {
         ))}
       </div>
 
-      {/* INPUT AREA */}
+      {/* Mesaj Input */}
       <div className="p-4 border-t border-white/10 bg-black/30 flex gap-3">
         <input
           type="text"
