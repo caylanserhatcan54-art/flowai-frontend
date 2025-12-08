@@ -1,173 +1,116 @@
 "use client";
-
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-
-type ChatMessage = {
-  role: "user" | "assistant";
-  content: string;
-};
+import { useState, useEffect } from "react";
 
 const BACKEND = "https://ai-shop-backend-2.onrender.com";
 
-export default function AIChatPage() {
-  const { shopId } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [shopExists, setShopExists] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: "assistant",
-      content:
-        "Merhaba 👋 Ben FlowAI! Bu mağazanın ürünleri hakkında bilgi isteyebilirsin. Hangi ürünü arıyorsun?",
-    },
-  ]);
+export default function AiChatPage({ params }: any) {
+  const shopId = params?.shopId ?? null;
+  const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Mağaza var mı kontrol et
   useEffect(() => {
-    async function checkShop() {
-      try {
-        const res = await fetch(`${BACKEND}/api/public/shop/${shopId}`);
-        const data = await res.json();
-
-        if (data?.ok) {
-          setShopExists(true);
-        } else {
-          setShopExists(false);
-        }
-      } catch (e) {
-        setShopExists(false);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    checkShop();
-  }, [shopId]);
+    // İlk karşılama mesajı
+    setMessages([
+      {
+        role: "assistant",
+        content:
+          "Merhaba 👋 Ben FlowAI! Aradığın ürünleri söyleyebilirsin. Beden, renk veya kullanım amacını da yazarsan daha iyi öneririm.",
+      },
+    ]);
+  }, []);
 
   async function sendMessage() {
-    if (!input.trim() || sending) return;
+    if (!input.trim()) return;
 
-    const text = input.trim();
-    setInput("");
-    setMessages((prev) => [...prev, { role: "user", content: text }]);
-    setSending(true);
+    if (!shopId) {
+      alert("Shop ID alınamadı!");
+      return;
+    }
+
+    const newMessages = [
+      ...messages,
+      { role: "user", content: input },
+    ];
+
+    setMessages(newMessages);
+    setLoading(true);
 
     try {
-      // 🔥 DOĞRU ENDPOINT: /api/ai/chat
       const res = await fetch(`${BACKEND}/api/ai/chat`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          shopId,              // hangi mağaza?
-          message: text,       // müşterinin mesajı
-          platform: "public",  // public widget/chat
+          shopId, // 📌 BURASI EN ÖNEMLİ
+          messages: newMessages,
         }),
       });
 
       const data = await res.json();
 
-      if (data?.ok && data?.reply) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: data.reply as string },
-        ]);
-      } else {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content:
-              "Şu anda yanıt veremiyorum, lütfen biraz sonra tekrar dene. ❌",
-          },
-        ]);
-      }
-    } catch (e) {
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: "Bağlantı hatası ❌ Lütfen daha sonra tekrar dene.",
+          content: data.reply ?? "Şu anda cevap oluşturamadım, tekrar deneyebilirsin.",
         },
       ]);
-    } finally {
-      setSending(false);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "⚠️ Bağlantıda geçici bir sorun çıktı. Lütfen tekrar dene.",
+        },
+      ]);
     }
-  }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#06071A] text-white text-xl">
-        Yükleniyor...
-      </div>
-    );
-  }
-
-  if (!shopExists) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#06071A] text-white text-center gap-4 px-4">
-        <h1 className="text-3xl font-bold">❌ Mağaza bulunamadı</h1>
-        <p>
-          Bu AI linkine bağlı mağaza pasif olabilir veya henüz oluşturulmamış
-          olabilir.
-        </p>
-      </div>
-    );
+    setInput("");
+    setLoading(false);
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#06071A] to-[#120022] text-white flex flex-col">
-      {/* HEADER */}
-      <header className="px-4 py-3 border-b border-white/10 bg-black/30 flex items-center gap-2">
-        <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-xs font-bold">
-          AI
-        </div>
-        <div>
-          <p className="text-sm font-semibold">FlowAI Asistan</p>
-          <p className="text-[11px] text-emerald-300">Bu mağaza için özelleştirildi</p>
-        </div>
-      </header>
-
-      {/* MESAJLAR */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`flex ${
-              msg.role === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm leading-relaxed ${
-                msg.role === "user"
-                  ? "bg-blue-600 text-white rounded-br-sm"
-                  : "bg-[#241036] text-purple-100 rounded-bl-sm"
-              }`}
-            >
-              {msg.content}
-            </div>
-          </div>
-        ))}
+    <div className="min-h-screen bg-[#0A0F2B] text-white flex flex-col">
+      <div className="p-4 text-center border-b border-white/10 text-lg font-semibold">
+        FlowAI Chat – {shopId?.toUpperCase()}
       </div>
 
-      {/* INPUT */}
-      <div className="p-3 border-t border-white/10 bg-black/40 flex gap-2">
+      <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        {messages.map((m, i) => (
+          <div key={i}>
+            {m.role === "user" ? (
+              <div className="bg-blue-600 p-2 rounded-md text-right ml-auto w-fit">
+                {m.content}
+              </div>
+            ) : (
+              <div className="bg-white/20 p-2 rounded-md w-fit">
+                {m.content}
+              </div>
+            )}
+          </div>
+        ))}
+
+        {loading && (
+          <div className="text-sm opacity-70 animate-pulse">
+            AI düşünüyor...
+          </div>
+        )}
+      </div>
+
+      <div className="p-4 border-t border-white/10 flex gap-2">
         <input
+          className="flex-1 bg-white/10 border border-white/20 rounded-md px-3 py-2"
+          placeholder="Ürün, kategori veya ihtiyacını yaz..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="Ürün, tarz veya soru yaz..."
-          className="flex-1 bg-black/50 border border-white/20 rounded-xl px-4 py-2 text-sm outline-none"
         />
+
         <button
           onClick={sendMessage}
-          disabled={sending}
-          className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-sm font-semibold disabled:opacity-60"
+          disabled={loading}
+          className="bg-blue-500 px-4 rounded-md hover:bg-blue-600"
         >
-          Gönder 🚀
+          Gönder
         </button>
       </div>
     </div>
