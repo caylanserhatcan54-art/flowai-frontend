@@ -1,157 +1,126 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const BACKEND = "https://ai-shop-backend-2.onrender.com";
-
-type Message = {
-  role: "user" | "assistant";
-  content: string;
-  productImage?: string;
-  productUrl?: string;
-};
-
-export default function ChatPage({ params }: { params: { shopId: string } }) {
-  const { shopId } = params;
-  const [messages, setMessages] = useState<Message[]>([
+export default function AIChatPage() {
+  const { shopId } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [shopExists, setShopExists] = useState(false);
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>([
     {
       role: "assistant",
-      content: "Merhaba 👋 Ben FlowAI! Bu mağazanın ürünleri hakkında bilgi isteyebilirsin. Hangi ürünü arıyorsun?",
-    },
-  ]);
-
-  const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false);
-  const [conversationId, setConversationId] = useState<string | null>(null);
-
-  const chatRef = useRef<HTMLDivElement>(null);
-
-  // Scroll aşağı sabit
-  useEffect(() => {
-    if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      content: "Merhaba 👋 Ben FlowAI! Bu mağazanın ürünleri hakkında bilgi isteyebilirsin. Hangi ürünü arıyorsun?"
     }
-  }, [messages]);
+  ]);
+  const [input, setInput] = useState("");
+
+  const BACKEND = "https://ai-shop-backend-2.onrender.com";
+
+  // mağaza kontrolü
+  async function checkShop() {
+    try {
+      const res = await fetch(`${BACKEND}/api/public/shop/${shopId}`);
+      const data = await res.json();
+
+      if (data?.ok) {
+        setShopExists(true);
+      } else {
+        setShopExists(false);
+      }
+      
+    } catch {
+      setShopExists(false);
+    }
+    setLoading(false);
+  }
 
   async function sendMessage() {
     if (!input.trim()) return;
 
-    const userMsg: Message = { role: "user", content: input };
-
-    setMessages((prev) => [...prev, userMsg]);
+    const msg = input.trim();
+    setMessages(prev => [...prev, { role: "user", content: msg }]);
     setInput("");
-    setSending(true);
 
     try {
-      const res = await fetch(`${BACKEND}/api/ai/chat`, {
+      const res = await fetch(`${BACKEND}/api/chat/${shopId}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shopId,
-          message: userMsg.content,
-          conversationId,
-          platform: "public",
-        }),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: msg })
       });
 
       const data = await res.json();
 
-      if (data.ok) {
-        setConversationId(data.conversationId);
-
-        const assistantMsg: Message = {
-          role: "assistant",
-          content: data.reply,
-          productImage: data.productImage,
-          productUrl: data.productUrl,
-        };
-
-        setMessages((prev) => [...prev, assistantMsg]);
+      if (data?.reply) {
+        setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
       } else {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: "Şu anda cevap veremiyorum, tekrar dener misiniz?",
-          },
-        ]);
+        setMessages(prev => [...prev, { role: "assistant", content: "Şu anda cevap veremiyorum, tekrar dener misiniz?" }]);
       }
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "Bağlantı hatası oluştu.",
-        },
-      ]);
-    }
 
-    setSending(false);
+    } catch {
+      setMessages(prev => [...prev, { role: "assistant", content: "Bağlantı hatası ❌ Daha sonra tekrar dene." }]);
+    }
+  }
+
+  useEffect(() => {
+    checkShop();
+  }, []);
+
+  // LOADING SCREEN
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white text-xl">
+        Yükleniyor...
+      </div>
+    );
+  }
+
+  // SHOP NOT FOUND
+  if (!shopExists) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-white text-center gap-4">
+        <h1 className="text-3xl font-bold">❌ Mağaza bulunamadı</h1>
+        <p>Bu mağaza artık aktif olmayabilir veya hiç kayıt edilmemiş olabilir.</p>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-[#05060A] text-white flex flex-col items-center">
-      <header className="bg-[#0D101A] border-b border-gray-800 w-full p-4 text-center text-sm tracking-wide">
-        FlowAI – Akıllı Mağaza Asistanı
-      </header>
+    <div className="min-h-screen bg-gradient-to-b from-[#06071A] to-[#120022] text-white flex flex-col">
 
-      <div
-        ref={chatRef}
-        className="flex-1 w-full max-w-lg px-4 py-4 overflow-y-auto space-y-4"
-      >
-        {messages.map((m, i) => (
+      {/* CHAT MESSAGES */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        {messages.map((msg, index) => (
           <div
-            key={i}
-            className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+            key={index}
+            className={`max-w-[75%] px-4 py-2 rounded-xl text-sm ${
+              msg.role === "assistant"
+                ? "bg-[#1A103C] text-purple-200"
+                : "bg-blue-600 text-white ml-auto"
+            }`}
           >
-            <div
-              className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm whitespace-pre-line leading-relaxed shadow-md ${
-                m.role === "user"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-800 text-gray-100"
-              }`}
-            >
-              {m.content}
-
-              {m.productImage && (
-                <div className="mt-2">
-                  <img
-                    src={m.productImage}
-                    className="rounded-lg w-full"
-                    alt="Ürün"
-                  />
-                </div>
-              )}
-
-              {m.productUrl && (
-                <a
-                  href={m.productUrl}
-                  target="_blank"
-                  className="block text-xs underline text-emerald-300 mt-1"
-                >
-                  Ürüne Git
-                </a>
-              )}
-            </div>
+            {msg.content}
           </div>
         ))}
       </div>
 
-      <div className="border-t border-gray-800 w-full max-w-lg p-3 bg-[#0D101A]">
-        <textarea
-          rows={2}
+      {/* INPUT AREA */}
+      <div className="p-4 border-t border-white/10 bg-black/30 flex gap-3">
+        <input
+          type="text"
           value={input}
+          placeholder="Mesaj yaz..."
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ürün, beden, fiyat, kargo, kombin… sorabilirsin"
-          className="w-full bg-[#12131A] text-sm p-3 rounded-lg border border-gray-700 outline-none resize-none"
+          onKeyDown={e => e.key === "Enter" && sendMessage()}
+          className="flex-1 bg-black/50 border border-white/20 rounded-lg px-4 py-2 outline-none text-sm"
         />
-
         <button
           onClick={sendMessage}
-          disabled={sending}
-          className="mt-2 w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 py-3 rounded-lg font-semibold"
+          className="px-6 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-sm font-semibold"
         >
-          {sending ? "Gönderiliyor..." : "Gönder"}
+          Gönder 🚀
         </button>
       </div>
     </div>
