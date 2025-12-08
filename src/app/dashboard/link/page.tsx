@@ -1,84 +1,156 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const BACKEND = "https://ai-shop-backend-2.onrender.com";
 
 export default function LinkPage() {
-  const [shopData, setShopData] = useState<any>(null);
-  const shopId =
-    typeof window !== "undefined" ? localStorage.getItem("shopId") : null;
+  const router = useRouter();
+  const [shopId, setShopId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [membershipActive, setMembershipActive] = useState(false);
 
+  const [aiUrl, setAiUrl] = useState<string | null>(null);
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
+
+  // 1️⃣ localStorage'dan bilgileri oku
   useEffect(() => {
-    if (!shopId) return;
+    const token = localStorage.getItem("shopToken");
+    const membership = localStorage.getItem("membership");
+    const savedShopId = localStorage.getItem("shopId");
 
-    async function loadShopData() {
-      const res = await fetch(`${BACKEND}/api/public/shop/${shopId}`);
-      const json = await res.json();
-      setShopData(json);
+    if (!token) {
+      router.push("/login");
+      return;
     }
 
-    loadShopData();
+    if (membership === "active") {
+      setMembershipActive(true);
+    }
+
+    if (!savedShopId) {
+      setLoading(false);
+      return;
+    }
+
+    setShopId(savedShopId);
+  }, []);
+
+  // 2️⃣ Backend'den URL üret
+  useEffect(() => {
+    if (!shopId) {
+      setLoading(false);
+      return;
+    }
+
+    setAiUrl(`https://flowai.app/${shopId}`);
+    setQrUrl(`${BACKEND}/api/qr-image/${shopId}`);
+
+    setLoading(false);
   }, [shopId]);
 
-  if (!shopData) {
+  // 3️⃣ Yükleniyor ekranı
+  if (loading) {
     return (
-      <div className="text-white text-center p-20 text-2xl">
-        Yükleniyor...
+      <div className="text-white text-2xl p-20 text-center">
+        ⏳ Yükleniyor...
       </div>
     );
   }
 
-  const aiUrl = `https://flowai.app/${shopId}`;
-  const qrUrl = `${BACKEND}/api/qr-image/${shopId}`;
+  // 4️⃣ Eğer shop ID bile yoksa
+  if (!shopId) {
+    return (
+      <div className="text-white text-xl p-20 text-center">
+        ❌ Mağaza bulunamadı.<br />
+        Lütfen önce kayıt olup panelden ürün içe aktarın.
+      </div>
+    );
+  }
+
+  // 5️⃣ Üyelik yoksa kilitli ekran
+  if (!membershipActive) {
+    return (
+      <div className="text-white min-h-screen flex items-center justify-center p-10">
+        <div className="bg-white/10 border border-white/30 rounded-xl p-10 max-w-lg text-center space-y-4">
+          <h2 className="text-3xl font-bold mb-2">🔒 Erişim Kilitli</h2>
+          <p className="opacity-80">
+            QR kod ve AI Link sadece aktif aboneliği olan mağazalara açılır.
+          </p>
+
+          <button
+            onClick={() => router.push("/dashboard/payment")}
+            className="bg-green-500 hover:bg-green-600 text-black font-bold px-6 py-3 rounded-lg text-lg"
+          >
+            💳 Üyeliği Aktif Et
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 6️⃣ NORMAL EKRAN
+  async function copyAiUrl() {
+    if (!aiUrl) return;
+    await navigator.clipboard.writeText(aiUrl);
+    alert("🔗 AI Link kopyalandı!");
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0B0F2B] to-[#1C034D] text-white p-10">
-
-      <h1 className="text-4xl font-bold mb-6">🔗 Akıllı Link & QR Kod</h1>
-
-      <p className="opacity-90 mb-10 text-lg">
-        Müşterileriniz bu link ve QR kod ile AI satış temsilcisine ulaşabilir.
+    <div className="text-white p-12 min-h-screen bg-gradient-to-br from-[#0A0E27] to-[#1C034C]">
+      <h1 className="text-4xl font-bold mb-6">🔗 AI Link & QR Kod</h1>
+      <p className="opacity-80 text-lg mb-8">
+        Bu link ve QR kod müşterilerin yapay zekaya ulaşması için hazır 🎉
       </p>
 
-      {/* Link Card */}
-      <div className="bg-white/10 border border-white/10 rounded-xl p-6 max-w-xl">
-        <p className="text-lg font-medium break-all mb-4">{aiUrl}</p>
+      <div className="grid grid-cols-2 gap-10">
 
-        <button
-          onClick={() => navigator.clipboard.writeText(aiUrl)}
-          className="bg-green-600 hover:bg-green-700 px-4 py-3 rounded-lg font-semibold text-white w-full"
-        >
-          📋 Linki Kopyala
-        </button>
+        {/* SOL TARAF */}
+        <div className="bg-white/10 rounded-xl border border-white/20 p-8 flex flex-col">
+          <h3 className="text-2xl font-semibold mb-3">🌍 AI Link</h3>
+
+          <div className="bg-black/40 p-3 rounded text-lg break-all mb-4">
+            {aiUrl}
+          </div>
+
+          <button
+            onClick={copyAiUrl}
+            className="bg-green-600 hover:bg-green-700 py-3 rounded-lg"
+          >
+            📋 Linki Kopyala
+          </button>
+        </div>
+
+        {/* SAĞ TARAF */}
+        <div className="bg-white/10 rounded-xl border border-white/20 p-8 flex flex-col items-center">
+          <h3 className="text-2xl font-semibold mb-3">🖼 QR Kod</h3>
+
+          <img
+            src={qrUrl!}
+            className="w-64 h-64 bg-white rounded-lg p-2 mb-6"
+          />
+
+          <a
+            href={qrUrl!}
+            target="_blank"
+            className="bg-blue-600 hover:bg-blue-700 py-3 px-6 rounded-lg"
+          >
+            ⬇ QR Kod İndir
+          </a>
+        </div>
       </div>
 
-      {/* QR Card */}
-      <div className="bg-white/10 border border-white/10 rounded-xl p-6 max-w-xl mt-8 flex flex-col items-center">
-        <img
-          src={qrUrl}
-          alt="QR Code"
-          className="w-60 h-60 rounded-xl bg-white p-2 shadow-lg"
-        />
+      <div className="mt-10 bg-white/10 p-8 rounded-xl border border-white/20">
+        <h2 className="text-2xl font-semibold mb-4">📍 Nereye koyulur?</h2>
 
-        <button
-          onClick={() => window.open(qrUrl, "_blank")}
-          className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold text-white mt-6"
-        >
-          ⬇ QR Kodu İndir
-        </button>
-      </div>
-
-      <div className="mt-12 max-w-xl bg-white/10 border border-white/10 rounded-xl p-6">
-        <h3 className="text-xl font-semibold mb-3">📌 Nerede Kullanabilirsiniz?</h3>
-
-        <ul className="opacity-90 space-y-2 text-lg">
+        <ul className="text-lg space-y-2 opacity-90">
           <li>✔ Ürün açıklamasına ekleyin</li>
-          <li>✔ WhatsApp profil linkine koyun</li>
-          <li>✔ Instagram bio’ya ekleyin</li>
-          <li>✔ Mağaza bannerına koyun</li>
-          <li>✔ Kargo paketlerine QR olarak basın</li>
-          <li>✔ Kartvizitlere yerleştirin</li>
+          <li>✔ Mağaza banner'ına koyun</li>
+          <li>✔ WhatsApp butonu altına koyun</li>
+          <li>✔ Instagram profiline ekleyin</li>
+          <li>✔ Paket üzerine QR baskı alın</li>
+          <li>✔ Kartvizit üzerine ekleyin</li>
         </ul>
       </div>
     </div>
