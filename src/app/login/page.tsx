@@ -1,109 +1,122 @@
+// app/login/page.tsx
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-
-const BACKEND = "https://ai-shop-backend-2.onrender.com";
+import { login } from "@/lib/api";
+import { saveAuth } from "@/lib/auth";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  async function handleLogin(e: any) {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError("");
-
+    setError(null);
+    setLoading(true);
     try {
-      console.log("Sending:", { email, password });
-
-      const res = await fetch("https://ai-shop-backend-2.onrender.com/auth/login_shop", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      console.log("Response:", data);
-
-      if (data.ok) {
-        localStorage.setItem("shopToken", data.token);
-        router.push("/dashboard");
-      } else {
-        setError(data.error || "Giriş hatası");
-      }
-    } catch (err) {
-      setError("Sunucuya ulaşılamıyor!");
+      const auth = await login(email, password);
+      saveAuth(auth);
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError(err.message || "Giriş başarısız");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-700 p-6">
-      <div className="bg-white shadow-2xl rounded-2xl p-10 w-full max-w-md">
-        <h1 className="text-3xl font-extrabold text-gray-900 text-center">
-          FlowAI Giriş Yap
-        </h1>
-
-        <p className="text-center text-gray-600 mt-2 font-medium">
-          Mağaza yönetim paneline erişin
-        </p>
-
-        <form onSubmit={handleLogin} className="mt-10 space-y-6">
-          <div>
-            <label className="font-semibold text-gray-800 block mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              className="w-full border border-gray-300 p-3 rounded-lg focus:ring-4 focus:ring-purple-300 text-gray-900"
-              placeholder="mail@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="max-w-5xl w-full grid md:grid-cols-[1.3fr_1fr] gap-10 items-center">
+        {/* Left info */}
+        <div className="hidden md:block">
+          <div className="inline-flex items-center gap-3 rounded-full border border-white/10 px-4 py-1 text-xs text-white/70 mb-6">
+            <span className="h-1.5 w-1.5 rounded-full bg-flowPrimary" />
+            FlowAI E-Ticaret Satış Asistanı
           </div>
+          <h1 className="text-4xl font-semibold mb-4">
+            Mağazana <span className="text-flowPrimary">akıllı satış</span>{" "}
+            ekle.
+          </h1>
+          <p className="text-white/70 mb-6 text-sm leading-relaxed">
+            FlowAI, müşterilerinle sen yokken de konuşur, ürün önerir, kombin
+            çıkarır ve satın almaya yönlendirir.
+          </p>
 
-          <div>
-            <label className="font-semibold text-gray-800 block mb-2">
-              Şifre
-            </label>
-            <input
-              type="password"
-              className="w-full border border-gray-300 p-3 rounded-lg focus:ring-4 focus:ring-purple-300 text-gray-900"
-              placeholder="Şifreniz"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          <ul className="space-y-2 text-sm text-white/75">
+            <li>• Anlık ürün & kombin önerileri</li>
+            <li>• Kargo / iade sorularına otomatik yanıt</li>
+            <li>• Sepete atmış müşteriyi ikna cümleleri</li>
+          </ul>
+        </div>
 
-          {error && (
-            <p className="text-center text-red-600 font-semibold text-sm">
-              {error}
-            </p>
-          )}
+        {/* Right form */}
+        <div className="bg-flowCard/80 border border-white/10 rounded-2xl p-6 md:p-8 shadow-xl shadow-black/40">
+          <h2 className="text-xl font-semibold mb-1">FlowAI Panel Girişi</h2>
+          <p className="text-xs text-white/60 mb-6">
+            Satın aldığın FlowAI hesabınla giriş yap.
+          </p>
 
-          <button
-            type="submit"
-            className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white rounded-xl text-lg font-bold shadow-lg"
-          >
-            🚀 Giriş Yap
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-4 text-sm">
+            <div>
+              <label className="block mb-1 text-xs text-white/70">
+                E-posta
+              </label>
+              <input
+                type="email"
+                required
+                className="w-full rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-flowPrimary/60"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="ornek@magaza.com"
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-xs text-white/70">Şifre</label>
+              <input
+                type="password"
+                required
+                className="w-full rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-flowPrimary/60"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+            </div>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Hesabın yok mu?
-          <a href="/register" className="text-purple-700 font-bold ml-2">
-            Kayıt ol
-          </a>
-        </p>
+            {error && (
+              <div className="text-xs text-red-400 bg-red-900/30 border border-red-500/40 rounded-lg px-3 py-2">
+                {error}
+              </div>
+            )}
 
-        <p className="mt-4 text-center text-xs text-gray-400">
-          © {new Date().getFullYear()} FlowAI – Tüm Hakları Saklıdır
-        </p>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-2 rounded-lg bg-gradient-to-r from-flowAccent to-flowPrimary text-sm font-medium py-2.5 disabled:opacity-60"
+            >
+              {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
+            </button>
+
+            <div className="flex items-center justify-between text-[11px] text-white/60 mt-2">
+              <Link
+                href="/forgot-password"
+                className="hover:text-flowPrimary transition"
+              >
+                Şifremi unuttum
+              </Link>
+              <a
+                href="mailto:support@flowai.app"
+                className="hover:text-flowPrimary transition"
+              >
+                Destek: support@flowai.app
+              </a>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

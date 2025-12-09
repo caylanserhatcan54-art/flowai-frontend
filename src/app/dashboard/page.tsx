@@ -1,129 +1,177 @@
+// app/dashboard/page.tsx
 "use client";
 
+import DashboardShell from "@/components/DashboardShell";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { getShopAccessData } from "@/lib/api";
+import { loadAuth } from "@/lib/auth";
+
+type AccessData = {
+  shopId: string;
+  chatUrl: string;
+  qrPngUrl: string;
+  qrPdfUrl: string;
+  subscriptionActive: boolean;
+};
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [shopName, setShopName] = useState("");
+  const [data, setData] = useState<AccessData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [copyMsg, setCopyMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("shopToken");
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-
-    try {
-      const decoded: any = JSON.parse(atob(token.split(".")[1]));
-      setShopName(decoded.shopName);
-    } catch {
-      router.push("/login");
-    }
+    const auth = loadAuth();
+    if (!auth) return;
+    (async () => {
+      try {
+        const res = await getShopAccessData(auth.token);
+        setData(res);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
-  function logout() {
-    localStorage.removeItem("shopToken");
-    router.push("/login");
-  }
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopyMsg("Kopyalandı ✅");
+    setTimeout(() => setCopyMsg(null), 2000);
+  };
+
+  const embedCode = data
+    ? `<script src="https://flowai.app/widget.js" data-shop="${data.shopId}"></script>`
+    : "";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A0E27] to-[#1C034C] text-white">
+    <DashboardShell>
+      <div className="max-w-5xl mx-auto space-y-6">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <h1 className="text-2xl font-semibold mb-1">FlowAI Panel</h1>
+            <p className="text-sm text-white/60">
+              Buradan mağazana özel QR, link ve embed kodunu alabilirsin.
+            </p>
+          </div>
 
-      <div className="flex">
-        
-        {/* SOL MENÜ */}
-        <aside className="w-72 h-screen bg-[#11072A] border-r border-white/10 p-6 space-y-4 sticky top-0">
-          <h2 className="font-extrabold text-2xl mb-6 text-white tracking-wide">FlowAI Panel</h2>
+          <div className="flex items-center gap-2 text-xs">
+            <span
+              className={`h-2 w-2 rounded-full ${
+                data?.subscriptionActive ? "bg-emerald-400" : "bg-red-400"
+              }`}
+            />
+            {data?.subscriptionActive ? (
+              <span className="text-emerald-400">Abonelik aktif</span>
+            ) : (
+              <span className="text-red-400">
+                Abonelik pasif – lütfen plan satın al
+              </span>
+            )}
+          </div>
+        </div>
 
-          <button
-            onClick={() => router.push("/dashboard/setup")}
-            className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition font-semibold"
-          >
-            ⚡ Kuruluma Başla
-          </button>
+        {loading && (
+          <div className="text-sm text-white/60">Yükleniyor...</div>
+        )}
 
-          <button
-            onClick={() => router.push("/dashboard/link")}
-            className="w-full py-3 rounded-lg bg-green-600 hover:bg-green-700 transition font-semibold"
-          >
-            🔗 QR Kod & Akıllı Link
-          </button>
-
-          <button
-            onClick={() => router.push("/dashboard/settings")}
-            className="w-full py-3 rounded-lg bg-purple-600 hover:bg-purple-700 transition font-semibold"
-          >
-            🏪 Mağaza Yönetim Paneli
-          </button>
-
-          <button
-            onClick={logout}
-            className="w-full py-3 rounded-lg bg-red-600 hover:bg-red-700 transition font-semibold"
-          >
-            🚪 Çıkış Yap
-          </button>
-        </aside>
-
-        {/* ANA SAYFA İÇERİĞİ */}
-        <main className="flex-1 p-12">
-          <h1 className="text-4xl font-bold mb-2 text-white">
-            Merhaba {shopName} 🎉
-          </h1>
-          <p className="text-lg text-gray-300 mb-10">
-            FlowAI mağaza asistanı ile satış gücünü artırmaya hazırsın!
-          </p>
-
-          {/* BİLGİ KARTLARI */}
-          <div className="grid grid-cols-2 gap-10">
-
-            <div className="p-8 bg-white/10 rounded-xl border border-white/20 shadow-lg backdrop-blur-md">
-              <h3 className="text-2xl font-semibold mb-4">💬 Akıllı Mağaza Asistanı</h3>
-              <p className="opacity-90 leading-relaxed text-base">
-                Müşteriyi karşılar, ürün detaylarını anlatır, beden uyumu hakkında bilgi verir,
-                kampanya veya ek ürün önerisi yapar, marka tonunla konuşur.
-                Tarz–konsept–kullanım amacına göre ürün tavsiyesi yapar.
-                Gerçek mağaza tezgâhtarı gibi davranır ve ürün satışı odaklı yönlendirir.
-              </p>
-            </div>
-
-            <div className="p-8 bg-white/10 rounded-xl border border-white/20 shadow-lg backdrop-blur-md">
-              <h3 className="text-2xl font-semibold mb-4">🛒 Satış Odaklı Öneri Motoru</h3>
-              <p className="opacity-90 leading-relaxed text-base">
-                Müşteri niyetini analiz eder, sepete uygun ürün listesi çıkarır.
-                Kazak isteyen müşteriye uyumlu pantolon–çanta–aksesuar önerir.
-                Boya yapacak müşteriye eksik malzeme listesi çıkarır (rulo, örtü, bant).
-                Cross-sell & upsell yapar ve alışveriş sepetine yönlendirir.
-              </p>
-            </div>
-
-            <div className="col-span-2 p-8 bg-white/10 rounded-xl border border-white/20 shadow-lg backdrop-blur-md">
-              <h3 className="text-2xl font-semibold mb-4">🌍 Desteklenen Platformlar</h3>
-
-              <div className="grid grid-cols-5 gap-6 text-center mt-4 text-lg font-medium opacity-90">
-                <div>🟣 Trendyol</div>
-                <div>🟡 Hepsiburada</div>
-                <div>🔴 N11</div>
-                <div>🟢 Amazon TR</div>
-                <div>🌸 Çiçeksepeti</div>
+        {!loading && data && (
+          <div className="grid md:grid-cols-2 gap-5">
+            {/* QR Card */}
+            <div className="bg-flowCard/80 border border-white/10 rounded-2xl p-5 flex flex-col gap-4">
+              <div>
+                <h2 className="text-sm font-semibold mb-1">
+                  📱 Mağaza QR Kodu
+                </h2>
+                <p className="text-xs text-white/60">
+                  Bu QR&apos;ı kasaya, mağaza duvarına veya paketlere koy. Müşteri
+                  okuttuğunda FlowAI sohbet ekranı açılır.
+                </p>
               </div>
 
-              <p className="mt-4 opacity-80">
-                Ürünler otomatik aktarılır, tek panelde yönetilir ve yapay zeka hafızasına alınır.
-              </p>
+              <div className="flex items-center justify-center">
+                {data.qrPngUrl ? (
+                  <img
+                    src={data.qrPngUrl}
+                    alt="FlowAI QR"
+                    className="h-40 w-40 rounded-xl bg-white p-2"
+                  />
+                ) : (
+                  <div className="h-40 w-40 rounded-xl bg-white/5 border border-dashed border-white/20 flex items-center justify-center text-xs text-white/50">
+                    QR henüz üretilmedi
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3 text-xs">
+                <a
+                  href={data.qrPngUrl}
+                  download
+                  className="flex-1 text-center rounded-lg border border-flowPrimary/60 text-flowPrimary py-2 hover:bg-flowPrimary/10"
+                >
+                  PNG olarak indir
+                </a>
+                <a
+                  href={data.qrPdfUrl}
+                  download
+                  className="flex-1 text-center rounded-lg border border-white/20 py-2 hover:bg-white/5"
+                >
+                  PDF olarak indir
+                </a>
+              </div>
             </div>
 
-            <div className="col-span-2 p-8 bg-white/10 rounded-xl border border-white/20 shadow-lg backdrop-blur-md text-center">
-              <h3 className="text-2xl font-semibold mb-3">🧍‍♀️ Yapay Zeka TRY-ON (Yakında)</h3>
-              <p className="opacity-85">
-                Müşteri fotoğraf yüklediğinde ürün kendi üzerinde gösterilecek.
-                Gerçek deneyimi → satın alıma çevirecek 🚀
-              </p>
-            </div>
+            {/* Link + embed */}
+            <div className="flex flex-col gap-4">
+              <div className="bg-flowCard/80 border border-white/10 rounded-2xl p-5 space-y-3">
+                <div>
+                  <h2 className="text-sm font-semibold mb-1">
+                    🔗 Mağaza Sohbet Linki
+                  </h2>
+                  <p className="text-xs text-white/60">
+                    Bunu Instagram bio, WhatsApp durumu veya web sitene
+                    koyabilirsin.
+                  </p>
+                </div>
+                <div className="bg-black/40 border border-white/15 rounded-xl px-3 py-3 text-xs break-all">
+                  {data.chatUrl}
+                </div>
+                <button
+                  onClick={() => handleCopy(data.chatUrl)}
+                  className="text-xs rounded-lg bg-flowPrimary/10 border border-flowPrimary/50 px-3 py-2 hover:bg-flowPrimary/20"
+                >
+                  Linki kopyala
+                </button>
+              </div>
 
+              <div className="bg-flowCard/80 border border-white/10 rounded-2xl p-5 space-y-3">
+                <div>
+                  <h2 className="text-sm font-semibold mb-1">
+                    🧩 Web Site Embed Kodu
+                  </h2>
+                  <p className="text-xs text-white/60">
+                    Bu kodu sitenin <code>&lt;body&gt;</code> altına ekle. Sağ
+                    altta baloncuk şeklinde FlowAI çıkar.
+                  </p>
+                </div>
+                <pre className="bg-black/60 border border-white/15 rounded-xl px-3 py-3 text-[11px] overflow-x-auto">
+                  {embedCode}
+                </pre>
+                <button
+                  onClick={() => handleCopy(embedCode)}
+                  className="text-xs rounded-lg bg-white/5 border border-white/20 px-3 py-2 hover:bg-white/10"
+                >
+                  Embed kodu kopyala
+                </button>
+              </div>
+            </div>
           </div>
-        </main>
+        )}
+
+        {copyMsg && (
+          <div className="text-xs text-flowPrimary mt-2">{copyMsg}</div>
+        )}
       </div>
-    </div>
+    </DashboardShell>
   );
 }
