@@ -2,25 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
 body {
   background: linear-gradient(180deg, #060712, #030414);
   color: white;
-  font-family: 'Inter', sans-serif;
-}
-
-section {
-  scroll-margin-top: 140px;
-}
-
-.card {
-  @apply rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-cardGlow;
-}
-
-.btn-primary {
-  @apply bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition;
-}
-
-.btn-secondary {
-  @apply border border-white/30 text-white/90 hover:bg-white/10 px-6 py-2.5 rounded-xl transition font-medium;
+  font-family: sans-serif;
 }
