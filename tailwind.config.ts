@@ -1,21 +1,24 @@
-// tailwind.config.ts
-import type { Config } from "tailwindcss";
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: [
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/app/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        flowBg: "linear-gradient(115deg, #091125, #1a2750, #091125)",
+      },
       colors: {
-        flowBg: "#050816",
-        flowCard: "#0b1020",
-        flowPrimary: "#4EF3FF",
-        flowAccent: "#7A00FF",
+        flowPrimary: "#6c63ff",
+        flowSecondary: "#00d4ff",
+        flowDark: "#0d1220",
+        flowLight: "#e3e8f4",
+      },
+      boxShadow: {
+        flowShadow: "0 8px 30px rgba(108,99,255,0.25)",
       },
     },
   },
   plugins: [],
 };
-export default config;
