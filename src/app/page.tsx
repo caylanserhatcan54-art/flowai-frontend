@@ -1,208 +1,309 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#070622] text-white">
-      <header className="flex justify-between items-center px-10 py-6">
-        <div className="flex items-center gap-2">
-          <span className="bg-blue-600 px-2 py-1 rounded-md text-xs">AI</span>
-          <h1 className="text-xl font-bold">FlowAI</h1>
+    <div className="min-h-screen bg-slate-950 text-slate-50">
+      {/* HERO */}
+      <header className="border-b border-slate-800 bg-gradient-to-b from-slate-950 via-slate-950 to-slate-900">
+        <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-blue-500 flex items-center justify-center text-xs font-bold">
+              AI
+            </div>
+            <span className="font-semibold text-lg">FlowAI</span>
+          </div>
+
+          <nav className="hidden md:flex items-center gap-6 text-sm text-slate-300">
+            <a href="#features" className="hover:text-white">Özellikler</a>
+            <a href="#platforms" className="hover:text-white">Platformlar</a>
+            <a href="#pricing" className="hover:text-white">Fiyatlandırma</a>
+            <a href="#faq" className="hover:text-white">SSS</a>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <Link href="/login" className="text-sm text-slate-300 hover:text-white">
+              Giriş Yap
+            </Link>
+            <Link href="/register" className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600">
+              Kayıt Ol
+            </Link>
+          </div>
         </div>
 
-        <nav className="flex gap-8 text-sm opacity-90">
-          <Link href="#">Özellikler</Link>
-          <Link href="#">Platformlar</Link>
-          <Link href="#prices">Fiyatlandırma</Link>
-          <Link href="#faq">SSS</Link>
-        </nav>
+        <div className="max-w-6xl mx-auto px-4 py-12 md:py-20 grid md:grid-cols-2 gap-10 items-center">
+          {/* LEFT */}
+          <div>
+            <span className="inline-flex items-center rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300 mb-4">
+              🚀 Yeni Nesil AI Satış Asistanı
+            </span>
 
-        <div className="flex gap-4 text-sm">
-          <Link
-            href="/login"
-            className="opacity-80 hover:opacity-100 transition"
-          >
-            Giriş Yap
-          </Link>
-          <Link
-            href="/register"
-            className="bg-white text-black px-4 py-2 rounded-lg hover:bg-gray-200"
-          >
-            Kayıt Ol
-          </Link>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+              FlowAI – Çoklu Platform
+              <span className="text-blue-400"> Yapay Zeka Satış Asistanı</span>
+            </h1>
+
+            <p className="mt-4 text-slate-300 text-sm md:text-base leading-relaxed">
+              Trendyol, Hepsiburada, N11, Amazon TR ve ÇiçekSepeti ile uyumlu.
+              Mağazana 7/24 çalışan yapay zekâ satış temsilcisi ekle. Müşterileri karşılasın,
+              ürünleri analiz etsin, soruları yanıtlasın ve sepete yönlendirsin.
+              AI Try-On (Yakında) ile müşterinin fotoğrafı üzerine ürünü otomatik yerleştirir.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/register" className="rounded-lg bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-600">
+                Hemen Başla
+              </Link>
+              <a href="#pricing" className="rounded-lg border border-slate-700 px-5 py-2.5 text-sm font-semibold text-slate-200 hover:border-slate-500">
+                Fiyatları Gör
+              </a>
+            </div>
+
+            <div className="mt-6 text-xs text-slate-400 space-y-1">
+              <p>✅ 10 saniyede embed koduyla kurulum</p>
+              <p>✅ Tüm konuşmalar panelde kayıt altında</p>
+              <p>✅ Çoklu platform uyumu</p>
+            </div>
+          </div>
+
+          {/* RIGHT PREVIEW */}
+          <div className="hidden md:block">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-2xl">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-semibold text-slate-200">Canlı Sohbet – FlowAI</span>
+                <span className="text-[10px] text-emerald-400">7/24 Aktif • AI</span>
+              </div>
+
+              <div className="space-y-3 text-sm">
+                <div className="w-4/5 rounded-xl bg-slate-800 px-3 py-2 text-slate-100">
+                  Merhaba 👋 Ben FlowAI. Ne tarz bir ürün arıyorsunuz?
+                </div>
+
+                <div className="flex justify-end">
+                  <div className="w-3/4 rounded-xl bg-blue-600 px-3 py-2 text-right text-slate-50">
+                    Günlük kullanıma uygun bir sweatshirt arıyorum.
+                  </div>
+                </div>
+
+                <div className="w-4/5 rounded-xl bg-slate-800 px-3 py-2 text-slate-100">
+                  Sizin için mağazanızdaki 3 ürünü buldum. Ayrıca isterseniz fotoğraf yükleyin,
+                  üzerinizde nasıl duracağını gösterebilirim. 🧠🧥
+                </div>
+              </div>
+
+              <div className="mt-4 border-t border-slate-800 pt-3 text-xs text-slate-500">
+                Bu sadece bir önizlemedir. Gerçek sohbetleri panelden takip edebilirsiniz.
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* HERO */}
-      <section className="px-10 mt-10 grid grid-cols-2 gap-14">
-        <div>
-          <div className="border border-green-500 text-green-400 w-fit px-3 py-1 rounded-full text-sm mb-4">
-            🌿 Yeni Nesil AI Satış Asistanı
-          </div>
+      {/* PLATFORMLAR */}
+      <section id="platforms" className="max-w-6xl mx-auto px-4 py-10 md:py-14">
+        <h2 className="text-2xl md:text-3xl font-bold mb-3">Desteklenen Platformlar</h2>
+        <p className="text-slate-300 text-sm md:text-base mb-6">
+          FlowAI Türkiye’deki büyük pazaryerleriyle tam uyumludur.
+        </p>
 
-          <h2 className="text-5xl font-bold leading-tight">
-            FlowAI – Çoklu Platform{" "}
-            <span className="text-blue-400">Yapay Zeka Satış Asistanı</span>
-          </h2>
-
-          <p className="mt-6 text-lg opacity-90 leading-relaxed">
-            Trendyol, Hepsiburada, N11, Amazon TR, Shopier, Shopify, İkas,
-            Ideasoft, Çiçeksepeti ve PttAVM ile uyumlu.
-            <br />
-            <br />
-            Mağazana 7/24 çalışan bir yapay zekâ satış temsilcisi ekle;
-            müşterileri karşılasın, ürünleri analiz etsin, soruları
-            cevaplasın ve sepete yönlendirsin.
-            <br />
-            <br />
-            AI Try-On ile müşteriler fotoğraf yüklesin, ürünleri kendi
-            üzerlerinde canlı olarak görsün!
-          </p>
-
-          <div className="flex gap-4 mt-8">
-            <Link
-              href="/register"
-              className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-medium"
-            >
-              Hemen Başla
-            </Link>
-
-            <a
-              href="#prices"
-              className="border border-blue-500 px-6 py-3 rounded-lg hover:bg-blue-600 hover:border-blue-600"
-            >
-              Fiyatları Gör
-            </a>
-          </div>
-
-          <ul className="mt-6 text-sm opacity-75 space-y-1">
-            <li>✔ 10 saniyede embed koduyla kurulum</li>
-            <li>✔ Tüm konuşmalar yönetim panelinde kayıt altında</li>
-            <li>✔ Tüm büyük pazar yerleriyle uyumlu</li>
-          </ul>
-        </div>
-
-        {/* CHAT SIMULATION */}
-        <div className="bg-[#0f0c38] rounded-2xl border border-[#29245f] p-4 shadow-xl">
-          <p className="text-xs text-right opacity-80">7/24 Aktif · AI</p>
-          <div className="bg-[#1c1a48] px-3 py-2 rounded-xl w-fit mt-3 text-sm opacity-90">
-            Merhaba 👋 Ben FlowAI. Ne tarz bir ürün arıyorsunuz?
-          </div>
-          <div className="bg-blue-600 px-3 py-2 rounded-xl w-fit ml-auto mt-3 text-sm">
-            Günlük kullanıma uygun, kapüşonlu bir sweatshirt arıyorum.
-          </div>
-          <div className="bg-[#1c1a48] px-3 py-2 rounded-xl w-fit mt-3 text-sm opacity-90">
-            Sizin için Trendyol mağazanızdaki 3 ürünü buldum. Ayrıca isterseniz
-            fotoğraf yükleyin, üzerinizde nasıl duracağını gösterebilirim. 👚📸
-          </div>
-          <p className="text-xs text-center opacity-50 mt-4">
-            Bu sadece bir ön izleme. Gerçek sohbetleri panelden takip edebilirsiniz.
-          </p>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+          {["Trendyol", "Hepsiburada", "N11", "Amazon TR", "ÇiçekSepeti"].map((name) => (
+            <div key={name} className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 flex items-center justify-center text-center text-slate-200">
+              {name}
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* SUPPORTED PLATFORMS */}
-      <section className="px-10 mt-24">
-        <h2 className="text-3xl font-bold mb-6">Desteklenen Platformlar</h2>
+      {/* ÖZELLİKLER */}
+      <section id="features" className="max-w-6xl mx-auto px-4 py-10 md:py-14 border-t border-slate-800">
+        <h2 className="text-2xl md:text-3xl font-bold mb-3">FlowAI’nin Özellikleri</h2>
 
-        <div className="grid grid-cols-6 gap-6 text-center text-sm font-medium">
-          <div className="bg-[#11103a] p-4 rounded-lg border border-[#26235d]">Trendyol</div>
-          <div className="bg-[#11103a] p-4 rounded-lg border border-[#26235d]">Hepsiburada</div>
-          <div className="bg-[#11103a] p-4 rounded-lg border border-[#26235d]">N11</div>
-          <div className="bg-[#11103a] p-4 rounded-lg border border-[#26235d]">Amazon TR</div>
-          <div className="bg-[#11103a] p-4 rounded-lg border border-[#26235d]">ÇiçekSepeti</div>
-          <div className="bg-[#11103a] p-4 rounded-lg border border-[#26235d]">Shopier</div>
+        <p className="text-slate-300 text-sm md:text-base mb-8">
+          FlowAI, mağazanın satış oranını artırmak için hem analiz hem de müşteri deneyimi odaklı çalışır.
+        </p>
+
+        <div className="grid md:grid-cols-2 gap-6">
+
+          {/* ÜRÜN ANALİZİ */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+            <h3 className="font-semibold text-lg mb-2">🔥 Akıllı Ürün Analizi</h3>
+            <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
+              <li>Ürün görsellerinden stil, mevsim ve kullanım alanı çıkarımı</li>
+              <li>Benzer ürün önerileri</li>
+              <li>Renk, doku, kumaş analizi</li>
+            </ul>
+          </div>
+
+          {/* CHAT ASİSTANI */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+            <h3 className="font-semibold text-lg mb-2">🤝 AI Chat Asistanı</h3>
+            <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
+              <li>Müşteriyi karşılar ve yönlendirir</li>
+              <li>Beden & ölçü önerisi</li>
+              <li>Kargo, iade, teslimat bilgisi</li>
+              <li>Kampanya duyuruları</li>
+            </ul>
+          </div>
+
+          {/* NİYET ANALİZİ */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+            <h3 className="font-semibold text-lg mb-2">🧠 Niyet & Duygu Analizi</h3>
+            <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
+              <li>Kararsız müşteriyi ikna edici öneriler</li>
+              <li>Fiyat odaklı müşteriye uygun alternatifler</li>
+              <li>Satın alma niyeti olan kullanıcıyı sepete yönlendirme</li>
+            </ul>
+          </div>
+
+          {/* TRY-ON */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+            <h3 className="font-semibold text-lg mb-2">🪄 AI Try-On (Yakında)</h3>
+            <p className="text-sm text-slate-300 mb-2">Müşteri fotoğraf yüklediğinde:</p>
+            <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
+              <li>Ürünü otomatik olarak görüntü üzerine yerleştirir</li>
+              <li>Tişört, elbise, sweatshirt uyumu gösterilir</li>
+              <li>Telefon kılıfı modeli telefona göre konumlandırılır</li>
+            </ul>
+          </div>
+
+          {/* CHROME EXTENSION */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+            <h3 className="font-semibold text-lg mb-2">🧩 Chrome Uzantısı</h3>
+            <ul className="text-sm text-slate-300 space-y-1 list-disc list-inside">
+              <li>Tek tıkla ürünleri Firestore’a aktarır</li>
+              <li>Fotoğraf, fiyat, varyant, renk otomatik çekilir</li>
+            </ul>
+          </div>
+
+          {/* PLATFORM ENTEGRASYONU */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+            <h3 className="font-semibold text-lg mb-2">🔗 Çoklu Platform Entegrasyonu</h3>
+            <p className="text-sm text-slate-300">
+              FlowAI aynı anda tüm platformlarda çalışabilir:
+            </p>
+            <ul className="text-sm text-slate-300 list-disc list-inside mt-2">
+              <li>Trendyol</li>
+              <li>Hepsiburada</li>
+              <li>N11</li>
+              <li>Amazon TR</li>
+              <li>ÇiçekSepeti</li>
+            </ul>
+          </div>
         </div>
       </section>
 
-      {/* PRICES */}
-      <section id="prices" className="px-10 mt-24">
-        <h2 className="text-3xl font-bold mb-10">Paketler ve Fiyatlandırma</h2>
+      {/* FİYATLANDIRMA */}
+      <section id="pricing" className="max-w-6xl mx-auto px-4 py-10 md:py-14 border-t border-slate-800">
+        <h2 className="text-2xl md:text-3xl font-bold mb-3">Fiyatlandırma (Aylık)</h2>
 
-        <div className="grid grid-cols-2 gap-10">
+        <p className="text-slate-300 text-sm md:text-base mb-8">
+          Aşağıdan ihtiyacına uygun planı seçebilirsin. Aboneliğini istediğin zaman değiştirebilirsin.
+        </p>
 
-          {/* STANDARD */}
-          <div className="bg-[#131139] border border-[#27245d] rounded-xl p-8">
-            <p className="text-2xl font-bold">⭐ Standart Plan</p>
-            <p className="text-blue-400 text-4xl font-bold mt-3">499 TL / ay</p>
+        <div className="grid md:grid-cols-2 gap-6">
 
-            <ul className="mt-6 space-y-2 text-sm opacity-80">
-              <li>✔ Sadece 1 platform entegrasyonu</li>
-              <li>✔ AI Chat & Ürün Analizi</li>
-              <li>✔ Sepete yönlendirme</li>
-              <li>✔ Chrome uzantısı ile ürün içe aktarma</li>
-              <li>✔ AI Try-On desteği</li>
+          {/* Standart Plan */}
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 flex flex-col">
+            <h3 className="text-xl font-semibold mb-1">⭐ Standart Plan – 499 TL / ay</h3>
+            <p className="text-sm text-slate-300 mb-4">
+              Sadece 1 adet e-ticaret platformu için kullanım hakkı.
+            </p>
+
+            <ul className="text-sm text-slate-300 list-disc list-inside space-y-1 mb-4">
+              <li>1 platform entegrasyonu</li>
+              <li>AI Chat Asistanı</li>
+              <li>Akıllı Ürün Analizi</li>
+              <li>Sepet önerileri</li>
+              <li>Chrome ürün içe aktarma</li>
+              <li>AI Try-On (Yakında)</li>
             </ul>
 
-            <Link
-              href="/register"
-              className="block bg-blue-600 hover:bg-blue-700 mt-8 py-3 rounded-lg text-center font-medium"
-            >
-              Satın Al
-            </Link>
+            <div className="mt-auto">
+              <Link href="/register" className="w-full inline-flex items-center justify-center rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-600">
+                Standart Planı Kullan
+              </Link>
+            </div>
           </div>
 
-          {/* PREMIUM */}
-          <div className="bg-[#15114f] border border-[#514cff] rounded-xl p-8 shadow-lg shadow-[#3729ff66]">
-            <p className="text-2xl font-bold">🔥 Premium Plan</p>
-            <p className="text-blue-400 text-4xl font-bold mt-3">899 TL / ay</p>
+          {/* Premium Plan */}
+          <div className="rounded-2xl border border-yellow-400/40 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-6 flex flex-col">
+            <div className="inline-flex items-center gap-2 text-xs text-yellow-300 mb-2">
+              <span className="px-2 py-0.5 rounded-full border border-yellow-400/40">En Popüler</span>
+            </div>
 
-            <ul className="mt-6 space-y-2 text-sm opacity-80">
-              <li>✔ Tüm platform entegrasyonlarını aynı anda kullan</li>
-              <li>✔ Çoklu ürün havuzu yönetimi</li>
-              <li>✔ Gelişmiş AI Try-On</li>
-              <li>✔ Çapraz ürün öneri sistemi</li>
-              <li>✔ Gelişmiş satış analizi raporları</li>
-              <li>✔ 7/24 AI destek sistemi</li>
+            <h3 className="text-xl font-semibold mb-1">🔥 Premium Plan – 899 TL / ay</h3>
+
+            <p className="text-sm text-slate-200 mb-4">
+              Tüm e-ticaret platformlarını aynı anda kullanabilirsin.
+            </p>
+
+            <ul className="text-sm text-slate-100 list-disc list-inside space-y-1 mb-4">
+              <li>Tüm platform entegrasyonları</li>
+              <li>Çoklu ürün havuzu</li>
+              <li>Gelişmiş AI Try-On (Yakında)</li>
+              <li>Çapraz platform önerileri</li>
+              <li>7/24 AI destek sistemi</li>
+              <li>Gelişmiş satış analizleri</li>
             </ul>
 
-            <Link
-              href="/register"
-              className="block bg-blue-600 hover:bg-blue-700 mt-8 py-3 rounded-lg text-center font-medium"
-            >
-              Satın Al
-            </Link>
+            <div className="mt-auto">
+              <Link href="/register" className="w-full inline-flex items-center justify-center rounded-lg bg-yellow-400 px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-yellow-300">
+                Premium Planı Kullan
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section id="faq" className="px-10 mt-28 pb-28">
-        <h2 className="text-3xl font-bold mb-8">Sıkça Sorulan Sorular</h2>
+      {/* SSS – Sıkça Sorulan Sorular */}
+      <section id="faq" className="max-w-6xl mx-auto px-4 py-10 md:py-14 border-t border-slate-800">
+        <h2 className="text-2xl md:text-3xl font-bold mb-3">Sıkça Sorulan Sorular</h2>
 
-        <div className="space-y-6 text-sm opacity-90 max-w-[850px]">
-          <details className="bg-[#0f0c3a] p-4 rounded-lg border border-[#29265f]">
-            <summary className="cursor-pointer font-medium">FlowAI mağazama nasıl kurulur?</summary>
-            <p className="mt-3">
-              Panelden embed kodunu alıp sitene yapıştırman yeterli. Shopify, Trendyol ve Hepsiburada
-              için hazır entegrasyonlarımız mevcut.
-            </p>
-          </details>
+        <div className="space-y-4 text-sm md:text-base">
 
-          <details className="bg-[#0f0c3a] p-4 rounded-lg border border-[#29265f]">
-            <summary className="cursor-pointer font-medium">AI Try-On nasıl çalışıyor?</summary>
-            <p className="mt-3">
-              Müşteri fotoğrafını yüklediğinde ürün otomatik olarak üzerine yerleştiriliyor.
-              Ürün kategorisine göre otomatik hizalama uygulanır.
+          <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+            <p className="font-semibold mb-1">❓ FlowAI nasıl çalışıyor?</p>
+            <p className="text-slate-300">
+              FlowAI, mağaza ürünlerini analiz eder ve müşterilerle canlı sohbet ederek yönlendirme yapar.
+              Sepete yönlendirme, soru cevaplama, ürün önerisi ve analiz gibi işlemleri otomatik gerçekleştirir.
             </p>
-          </details>
+          </div>
 
-          <details className="bg-[#0f0c3a] p-4 rounded-lg border border-[#29265f]">
-            <summary className="cursor-pointer font-medium">Premium’a geçince ne değişiyor?</summary>
-            <p className="mt-3">
-              Tüm platformlara aynı anda bağlanır, geniş ürün veritabanı yönetimi açılır ve raporlama sağlanır.
+          <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+            <p className="font-semibold mb-1">❓ QR Kod & Link nereye eklenebilir?</p>
+            <p className="text-slate-300">
+              Ürün açıklamalarına, mağaza banner’ına, WhatsApp profilinize, Instagram bio’ya ve paket gönderim kartlarına
+              QR kodu ekleyebilirsiniz. Müşteriler direkt AI asistana ulaşır.
             </p>
-          </details>
+          </div>
 
-          <details className="bg-[#0f0c3a] p-4 rounded-lg border border-[#29265f]">
-            <summary className="cursor-pointer font-medium">Geri ödeme var mı?</summary>
-            <p className="mt-3">
-              Abonelik iptal edildiğinde gelecek döneme dair ücret kesilmez.
+          <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+            <p className="font-semibold mb-1">❓ Chrome uzantısı ne işe yarar?</p>
+            <p className="text-slate-300">
+              Tek tıkla mağaza sayfanızdaki tüm ürünleri Firestore’a aktarır. Başlık, görsel, fiyat, varyant gibi tüm bilgiler otomatik eklenir.
             </p>
-          </details>
+          </div>
+
+          <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+            <p className="font-semibold mb-1">❓ Try-On özelliği ne zaman gelir?</p>
+            <p className="text-slate-300">
+              Try-On özelliği şu anda geliştirme aşamasındadır. Yakında Premium ve Standart plan kullanıcıları için aktif olacaktır.
+            </p>
+          </div>
+
+          <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+            <p className="font-semibold mb-1">❓ Ödemeleri nasıl yapacağım?</p>
+            <p className="text-slate-300">
+              Üyeliğinizi Stripe/İyzico ile güvenli şekilde ödeyebilirsiniz. 7 gün içinde koşulsuz iptal garantisi vardır.
+            </p>
+          </div>
         </div>
       </section>
+
+      <footer className="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        FlowAI © {new Date().getFullYear()} – Yapay Zeka Satış Asistanı
+      </footer>
     </div>
   );
 }
