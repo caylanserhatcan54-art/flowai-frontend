@@ -1,10 +1,16 @@
-// app/layout.tsx
 import "./globals.css";
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FlowAI Panel",
-  description: "FlowAI E-Ticaret Satış Asistanı Yönetim Paneli",
+  title: "FlowAI – Yapay Zeka Satış Asistanı",
+  description:
+    "FlowAI ile mağazana 7/24 çalışan yapay zeka satış danışmanı ekle. QR ile yönlendir, sohbet ettir, ürün öner, sepet artır.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -14,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
-      <body className="min-h-screen bg-[radial-gradient(circle_at_top,_#7A00FF33_0,_#050816_55%,_#050816_100%)] text-white">
+      <body className={`${inter.className} bg-slate-950 text-white min-h-screen`}>
         {children}
       </body>
     </html>
