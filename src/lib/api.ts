@@ -1,49 +1,53 @@
-export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://ai-shop-backend-2.onrender.com";
+export const API_URL = "https://ai-shop-backend-2.onrender.com";
 
 /**
- * Backend API Fetch Helper
+ * Backend fetch function
  */
-export async function apiFetch(
-  path: string,
-  options: {
-    method?: string;
-    body?: any;
-    headers?: any;
-  } = {}
-) {
+export async function apiFetch(path: string, options: any = {}) {
   const res = await fetch(`${API_URL}${path}`, {
-    method: options.method || "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined,
+    headers: { "Content-Type": "application/json" },
     cache: "no-store",
+    ...options,
   });
 
   if (!res.ok) {
-    console.log("❌ API ERROR:", await res.text());
-    throw new Error("API request failed");
+    console.log("API Error:", res.status);
+    throw new Error("API Request Failed");
   }
 
-  const json = await res.json();
-  return json;
+  return res.json();
 }
 
 /**
- * Kullanıcı AI panel erişim bilgisi
+ * Login request
+ */
+export async function login(email: string, password: string) {
+  return apiFetch("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+/**
+ * Shop Settings Retrieve
+ */
+export async function getShopSettings(shopId: string) {
+  return apiFetch(`/shop/settings/${shopId}`);
+}
+
+/**
+ * Shop Settings Update
+ */
+export async function updateShopSettings(shopId: string, data: any) {
+  return apiFetch(`/shop/settings/${shopId}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+/**
+ * Shop Access Panel
  */
 export async function getShopAccessData(shopId: string) {
-  return apiFetch(`/shop/access?shop=${shopId}`);
-}
-
-/**
- * AI Mesaj Gönderimi
- */
-export async function sendMessage(shopId: string, message: string) {
-  return apiFetch(`/assistant/message`, {
-    method: "POST",
-    body: { shopId, message },
-  });
+  return apiFetch(`/shop/access/${shopId}`);
 }

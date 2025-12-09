@@ -2,21 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
+html, body {
+    background-color: #0A072F;
+    color: white;
+    margin: 0;
+    padding: 0;
 }
 
-body {
-  @apply bg-flowBg text-white;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Segoe UI", sans-serif;
+input, button, textarea {
+    color: black;
 }
 
-/* Scrollbar hafif */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-thumb {
-  background-color: #2c2f4a;
-  border-radius: 999px;
+a {
+    color: #6B4EFF;
 }
